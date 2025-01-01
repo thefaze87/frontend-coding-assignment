@@ -29,6 +29,9 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
 
+  // Default search term when no query exists
+  const DEFAULT_SEARCH = "margarita";
+
   /**
    * Handles search input changes
    * Updates both visible input and internal query
@@ -38,11 +41,14 @@ const Home = () => {
   const handleSearch = (value: string) => {
     setIsSearching(true);
     setCocktails([]); // Clear existing data when search starts
-    const searchTerm = value.trim() || "margarita";
-    setDisplayValue(searchTerm);
-    setQuery(searchTerm);
+    const searchTerm = value.trim();
+    setDisplayValue(searchTerm); // Only show what user typed
+    setQuery(searchTerm || DEFAULT_SEARCH); // Use default search if empty
     setIndex(0);
-    setSearchParams({ q: searchTerm }, { replace: true });
+    setSearchParams(
+      searchTerm ? { q: searchTerm } : {}, // Only set URL param if there's a search
+      { replace: true }
+    );
   };
 
   /**
@@ -54,8 +60,8 @@ const Home = () => {
     if (queryParam) {
       handleSearch(queryParam);
     } else {
-      // Load initial "margarita" search if no query parameter
-      handleSearch("margarita");
+      // Load default search without showing it in input
+      setQuery(DEFAULT_SEARCH);
     }
   }, []); // Keep as mount-only to prevent search loop
 
