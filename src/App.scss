@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  &::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.88); // 88% opacity black overlay
+    z-index: 0;
+  }
+
+  background-image: url("./assets/background/bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.App {
+  position: relative;
+  z-index: 1; // Ensure content appears above the overlay
+
+  header {
+    h1 {
+      font-family: "Varela Round", serif;
+      font-weight: 400;
+      font-style: normal;
+      font-size: 2rem;
+      color: #fff;
+    }
+  }
+
+  main {
+    h2 {
+      font-family: "Varela Round", serif;
+      font-weight: 400;
+      font-style: normal;
+      font-size: 2.25rem;
+      color: #fff;
+    }
+  }
+}

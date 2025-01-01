@@ -1,0 +1,57 @@
+{
+  "compilerOptions": {
+    // Specify ECMAScript target version: ES5 for broader browser compatibility
+    "target": "es5",
+
+    // List of library files to include in the compilation
+    "lib": [
+      "dom", // DOM definitions
+      "dom.iterable", // DOM iterable APIs
+      "esnext" // Latest ECMAScript features
+    ],
+
+    // Allow JavaScript files to be compiled
+    "allowJs": true,
+
+    // Skip type checking of declaration files
+    "skipLibCheck": true,
+
+    // Enable interop between CommonJS and ES Modules
+    "esModuleInterop": true,
+
+    // Allow default imports from modules with no default export
+    "allowSyntheticDefaultImports": true,
+
+    // Enable all strict type checking options
+    "strict": true,
+
+    // Ensure casing in file references matches exactly
+    "forceConsistentCasingInFileNames": true,
+
+    // Report errors for fallthrough cases in switch statements
+    "noFallthroughCasesInSwitch": true,
+
+    // Specify module code generation
+    "module": "esnext",
+
+    // Specify module resolution strategy
+    "moduleResolution": "node",
+
+    // Allow importing JSON files
+    "resolveJsonModule": true,
+
+    // Ensure each file can be safely transpiled without relying on other imports
+    "isolatedModules": true,
+
+    // Do not emit outputs (Create React App handles this)
+    "noEmit": true,
+
+    // Support JSX for React
+    "jsx": "react-jsx"
+  },
+
+  // Files to include in compilation
+  "include": [
+    "src" // Include all files in the src directory
+  ]
+}
