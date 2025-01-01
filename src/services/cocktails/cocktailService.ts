@@ -1,5 +1,11 @@
 import { fetchFromApi, buildUrl } from "../api/apiService";
-import { SearchParams, CocktailResponse, IngredientResponse } from "../types";
+import {
+  SearchParams,
+  CocktailResponse,
+  IngredientResponse,
+  CocktailDetailsResponse,
+  Cocktail,
+} from "../types";
 
 const API_BASE_URL = "http://localhost:4000/api";
 
@@ -73,4 +79,19 @@ export const fetchIngredients = async (
   const url = buildUrl(`${API_BASE_URL}/ingredients/search`, params);
   const response = await fetchFromApi<IngredientResponse>(url);
   return response.ingredients;
+};
+
+export const fetchCocktailById = async (id: number): Promise<Cocktail> => {
+  const url = `${API_BASE_URL}/cocktail/${id}`;
+
+  try {
+    const response = await fetchFromApi<CocktailDetailsResponse>(url);
+    if (!response.drink) {
+      throw new Error(`Cocktail with ID ${id} not found`);
+    }
+    return response.drink;
+  } catch (error) {
+    console.error("Error fetching cocktail:", error);
+    throw error;
+  }
 };

@@ -44,3 +44,7 @@ body {
     }
   }
 }
+
+.loading-icon {
+  filter: brightness(0) saturate(100%) invert(100%);
+}

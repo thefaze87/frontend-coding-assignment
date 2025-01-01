@@ -1,6 +1,13 @@
 // Add any custom styles for the CocktailCard component here
 .cocktail-card {
-  h3 {
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    cursor: pointer;
+  }
+
+  .cocktail-name {
     font-family: "Varela Round", serif;
     font-weight: 400;
     font-style: normal;

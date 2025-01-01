@@ -7,6 +7,11 @@ import { fetchFromApi, buildUrl } from "../../api/apiService";
 import { CocktailResponse } from "../types";
 
 /**
+ * Test suite for cocktailService
+ * Tests the service layer that handles cocktail data fetching and processing
+ */
+
+/**
  * Mock the entire apiService module
  * This allows us to control API responses and verify correct URL construction
  */

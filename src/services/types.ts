@@ -76,3 +76,7 @@ export interface IngredientResponse {
     hasMore: boolean; // Whether more results are available
   };
 }
+
+export interface CocktailDetailsResponse {
+  drink: Cocktail;
+}
