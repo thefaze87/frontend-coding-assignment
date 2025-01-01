@@ -23,6 +23,11 @@ interface HeaderProps {
 const Header = ({ displayValue, onSearch }: HeaderProps) => {
   const [inputValue, setInputValue] = React.useState(displayValue);
 
+  // Update input value when displayValue prop changes
+  React.useEffect(() => {
+    setInputValue(displayValue);
+  }, [displayValue]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(inputValue);
@@ -51,7 +56,7 @@ const Header = ({ displayValue, onSearch }: HeaderProps) => {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setInputValue(e.target.value)
             }
-            placeholder="Search for a cocktail"
+            placeholder="Search all drinks"
             className="bg-transparent text-white placeholder-white w-full focus:outline-none"
           />
 

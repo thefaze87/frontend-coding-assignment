@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import {
+  useParams,
+  Link,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Cocktail } from "../services/types";
 import { fetchCocktailById } from "../services/cocktails/cocktailService";
 import loaderIcon from "../assets/icons/spinner.svg";
@@ -18,6 +23,7 @@ const CocktailDetails = () => {
   // Get cocktail ID from URL parameters
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   // State management
   const [cocktail, setCocktail] = useState<Cocktail | null>(null);
@@ -25,13 +31,21 @@ const CocktailDetails = () => {
   const [error, setError] = useState<string | null>(null);
   const [displayValue, setDisplayValue] = useState("");
 
+  // Update display value when search params change
+  useEffect(() => {
+    const queryParam = searchParams.get("q");
+    if (queryParam) {
+      setDisplayValue(queryParam);
+    }
+  }, [searchParams]);
+
   /**
    * Handles search input changes
    * Redirects to home page with search query parameter
    */
   const handleSearch = (value: string) => {
     setDisplayValue(value);
-    navigate(`/?q=${encodeURIComponent(value)}`);
+    navigate(`/?q=${encodeURIComponent(value)}`, { replace: true });
   };
 
   /**

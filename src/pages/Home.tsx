@@ -22,9 +22,7 @@ const Home = () => {
 
   // State Management
   const [query, setQuery] = useState(""); // Remove default query
-  const [displayValue, setDisplayValue] = useState(
-    searchParams.get("q") || "margarita"
-  ); // Visible search input value
+  const [displayValue, setDisplayValue] = useState(searchParams.get("q") || ""); // Visible search input value
   const [cocktails, setCocktails] = useState<Cocktail[]>([]); // List of cocktails
   const [index, setIndex] = useState(0); // Pagination start index
   const [limit] = useState(10); // Items per page
@@ -44,7 +42,7 @@ const Home = () => {
     setDisplayValue(searchTerm);
     setQuery(searchTerm);
     setIndex(0);
-    setSearchParams({ q: searchTerm });
+    setSearchParams({ q: searchTerm }, { replace: true });
   };
 
   /**
@@ -59,7 +57,7 @@ const Home = () => {
       // Load initial "margarita" search if no query parameter
       handleSearch("margarita");
     }
-  }, []); // Run only on mount
+  }, []); // Keep as mount-only to prevent search loop
 
   /**
    * Fetch cocktails when search parameters change
