@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Cocktail } from "../services/types";
 import { fetchCocktailById } from "../services/cocktails/cocktailService";
 import loaderIcon from "../assets/icons/spinner.svg";
@@ -17,6 +17,7 @@ import Header from "../components/Header";
 const CocktailDetails = () => {
   // Get cocktail ID from URL parameters
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   // State management
   const [cocktail, setCocktail] = useState<Cocktail | null>(null);
@@ -30,7 +31,7 @@ const CocktailDetails = () => {
    */
   const handleSearch = (value: string) => {
     setDisplayValue(value);
-    window.location.href = `/?q=${encodeURIComponent(value)}`;
+    navigate(`/?q=${encodeURIComponent(value)}`);
   };
 
   /**
