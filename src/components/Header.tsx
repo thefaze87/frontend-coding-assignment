@@ -20,7 +20,7 @@ interface HeaderProps {
  * @param {string} props.displayValue - Current search input value
  * @param {function} props.onSearch - Handler for search input changes
  */
-const Header: React.FC<HeaderProps> = ({ displayValue, onSearch }) => {
+const Header = ({ displayValue, onSearch }: HeaderProps) => {
   return (
     <header className="border-b border-white/20 w-full">
       <div className="w-full px-8 py-4 flex justify-between items-center">

@@ -3,14 +3,15 @@ import { fetchCocktails } from "./services/cocktails/cocktailService";
 import { Cocktail } from "./services/types";
 import "./App.scss";
 import Header from "./components/Header";
-
+import CocktailCard from "./components/CocktailCard/CocktailCard";
+import Pagination from "./components/Pagination";
 /**
  * Main application component for BarCraft
  * Manages the global state and layout of the application
  *
  * @component
  */
-const App: React.FC = () => {
+const App = () => {
   // State Management
   const [query, setQuery] = useState("m"); // Hidden default query for initial load
   const [displayValue, setDisplayValue] = useState(""); // Visible search input value
@@ -59,77 +60,19 @@ const App: React.FC = () => {
         {/* Cocktail Grid */}
         <div className="grid grid-cols-2 gap-6">
           {cocktails.map((cocktail) => (
-            <div
-              key={cocktail.id}
-              className="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow duration-300"
-            >
-              <img
-                src={cocktail.image}
-                alt={cocktail.name}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {cocktail.name}
-                </h3>
-                <p className="text-sm text-gray-600">{cocktail.category}</p>
-              </div>
-            </div>
+            <CocktailCard key={cocktail.id} cocktail={cocktail} />
           ))}
         </div>
 
         {/* Pagination Controls */}
         {cocktails.length > 0 && (
-          <div className="mt-8 flex justify-center items-center space-x-4">
-            {/* Previous Page Button */}
-            <button
-              onClick={() => setIndex(Math.max(0, index - limit))}
-              disabled={index === 0}
-              className="p-2 text-white rounded-full hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-
-            {/* Page Indicator */}
-            <span className="text-white">
-              Page {Math.floor(index / limit) + 1}
-            </span>
-
-            {/* Next Page Button */}
-            <button
-              onClick={() => setIndex(index + limit)}
-              disabled={cocktails.length < limit}
-              className="p-2 text-white rounded-full hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
-          </div>
+          <Pagination
+            index={index}
+            limit={limit}
+            hasMore={cocktails.length >= limit}
+            onNext={() => setIndex(index + limit)}
+            onPrevious={() => setIndex(Math.max(0, index - limit))}
+          />
         )}
       </main>
     </div>

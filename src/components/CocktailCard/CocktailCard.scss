@@ -1,0 +1,21 @@
+// Add any custom styles for the CocktailCard component here
+.cocktail-card {
+  h3 {
+    font-family: "Varela Round", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 2rem;
+    color: #fff;
+  }
+
+  .cocktail-category {
+    font-family: "Varela Round", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 0.69rem;
+    line-height: 21px;
+    letter-spacing: 1px;
+    color: #fff;
+    text-transform: uppercase;
+  }
+}
