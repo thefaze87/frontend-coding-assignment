@@ -4,7 +4,7 @@ import searchIcon from "../assets/icons/Search-Icon.svg";
 /**
  * Props interface for the Header component
  * @property displayValue - Current value to show in the search input
- * @property onSearch - Callback function triggered when search input changes
+ * @property onSearch - Callback function triggered when search is submitted
  */
 interface HeaderProps {
   displayValue: string;
@@ -18,9 +18,16 @@ interface HeaderProps {
  * @component
  * @param {HeaderProps} props - Component props
  * @param {string} props.displayValue - Current search input value
- * @param {function} props.onSearch - Handler for search input changes
+ * @param {function} props.onSearch - Handler for search submission
  */
 const Header = ({ displayValue, onSearch }: HeaderProps) => {
+  const [inputValue, setInputValue] = React.useState(displayValue);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(inputValue);
+  };
+
   return (
     <header className="border-b border-white/20 w-full">
       <div className="w-full px-8 py-4 flex justify-between items-center">
@@ -28,7 +35,10 @@ const Header = ({ displayValue, onSearch }: HeaderProps) => {
         <h1>BarCraft</h1>
 
         {/* Search Bar Container */}
-        <div className="mx-auto flex items-center space-x-2 w-1/4 rounded-lg border border-white">
+        <form
+          onSubmit={handleSubmit}
+          className="mx-auto flex items-center space-x-2 w-1/4 rounded-lg border border-white"
+        >
           {/* Search Icon */}
           <div className="px-4">
             <img src={searchIcon} alt="search" className="w-7 h-7" />
@@ -37,19 +47,22 @@ const Header = ({ displayValue, onSearch }: HeaderProps) => {
           {/* Search Input */}
           <input
             type="text"
-            value={displayValue}
+            value={inputValue}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              onSearch(e.target.value)
+              setInputValue(e.target.value)
             }
             placeholder="Search for a cocktail"
             className="bg-transparent text-white placeholder-white w-full focus:outline-none"
           />
 
           {/* Search Button */}
-          <button className="text-white flex-end ml-auto border-l border-white px-5 py-3">
+          <button
+            type="submit"
+            className="text-white flex-end ml-auto border-l border-white px-5 py-3"
+          >
             Go
           </button>
-        </div>
+        </form>
 
         {/* Spacer for layout balance */}
         <div className="w-[180px]"></div>

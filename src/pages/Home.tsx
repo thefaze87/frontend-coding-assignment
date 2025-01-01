@@ -33,7 +33,7 @@ const Home = () => {
    */
   const handleSearch = (value: string) => {
     setDisplayValue(value);
-    setQuery(value || "m"); // If empty, fallback to default "m"
+    setQuery(value || "m");
     setIndex(0); // Reset pagination when searching
   };
 
