@@ -2,6 +2,7 @@ import {
   fetchCocktails,
   fetchCocktailsByLetter,
   fetchPopularCocktails,
+  fetchAlcoholicCocktails,
 } from "../cocktailService";
 import { fetchFromApi, buildUrl } from "../../api/apiService";
 import { CocktailResponse } from "../types";
@@ -159,6 +160,47 @@ describe("cocktailService", () => {
         }
       );
       expect(result).toEqual(mockResponse.drinks);
+    });
+  });
+
+  describe("fetchAlcoholicCocktails", () => {
+    it("should fetch alcoholic cocktails with pagination", async () => {
+      const mockResponse = {
+        drinks: [
+          {
+            id: 11007,
+            name: "Margarita",
+            image: "https://example.com/margarita.jpg",
+          },
+        ],
+        totalCount: 1,
+        pagination: {
+          currentPage: 0,
+          totalPages: 1,
+          pageSize: 10,
+          startIndex: 0,
+          endIndex: 1,
+          hasMore: false,
+        },
+      };
+
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
+
+      const result = await fetchAlcoholicCocktails();
+      expect(result).toEqual(mockResponse.drinks);
+    });
+
+    it("should handle empty response", async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ drinks: [] }),
+      });
+
+      const result = await fetchAlcoholicCocktails();
+      expect(result).toEqual([]);
     });
   });
 });

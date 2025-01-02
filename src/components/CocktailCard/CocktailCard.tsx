@@ -38,7 +38,11 @@ const CocktailCard = ({ cocktail, loading = false }: CocktailCardProps) => {
 
   return (
     <Link
-      to={`/cocktail/${cocktail.id}?q=${encodeURIComponent(currentQuery || "")}`}
+      to={
+        currentQuery
+          ? `/cocktail/${cocktail.id}?q=${encodeURIComponent(currentQuery)}`
+          : `/cocktail/${cocktail.id}`
+      }
       className="block"
     >
       <div className="cocktail-card border-1 border-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow duration-300 flex items-start space-x-2 p-4">

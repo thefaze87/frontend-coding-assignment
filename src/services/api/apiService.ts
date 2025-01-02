@@ -60,28 +60,20 @@ export function buildUrl(baseUrl: string, params: SearchParams): string {
  */
 export const fetchFromApi = async <T>(url: string): Promise<T> => {
   try {
-    // Attempt to fetch data from the API
     const response = await fetch(url);
+    console.log("API Response:", response.status, response.statusText); // Debug log
 
-    // Check if the response was successful
     if (!response.ok) {
-      // Only log errors in non-test environments
-      // This keeps test output clean while maintaining logging in production
-      if (process.env.NODE_ENV !== "test") {
-        console.error(`API Error: ${response.statusText}`);
-      }
-      throw new Error(`Error: ${response.statusText}`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    // Parse and return the JSON response
-    return await response.json();
+    const data = await response.json();
+    return data;
   } catch (error) {
-    // Log any errors that occur during the fetch
-    // Only in non-test environments
-    if (process.env.NODE_ENV !== "test") {
-      console.error("API Error:", error);
-    }
-    // Re-throw the error for handling by the caller
+    console.error("API Error:", {
+      message: error instanceof Error ? error.message : "Unknown error",
+      url,
+    });
     throw error;
   }
 };

@@ -85,3 +85,28 @@ export interface IngredientResponse {
 export interface CocktailDetailsResponse {
   drink: Cocktail;
 }
+
+/**
+ * Represents a filtered cocktail with minimal details
+ */
+export interface FilteredCocktail {
+  id: number;
+  name: string;
+  image: string;
+}
+
+/**
+ * API response structure for filtered cocktail endpoints
+ */
+export interface FilteredCocktailResponse {
+  drinks: FilteredCocktail[];
+  totalCount: number;
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    pageSize: number;
+    startIndex: number;
+    endIndex: number;
+    hasMore: boolean;
+  };
+}

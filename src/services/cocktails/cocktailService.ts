@@ -5,6 +5,8 @@ import {
   IngredientResponse,
   CocktailDetailsResponse,
   Cocktail,
+  FilteredCocktail,
+  FilteredCocktailResponse,
 } from "../types";
 
 const API_BASE_URL = "http://localhost:4000/api";
@@ -53,6 +55,7 @@ export const fetchCocktails = async (
   };
 
   const url = buildUrl(`${API_BASE_URL}/search`, params);
+  console.log("Fetching from URL:", url); // Debug log
   const response = await fetchFromApi<CocktailResponse>(url);
   return response.drinks;
 };
@@ -142,3 +145,22 @@ const mapCocktailDetails = (data: any): Cocktail => ({
   alcoholic: data.strAlcoholic,
   glass: data.strGlass,
 });
+
+/**
+ * Fetches all drinks in the Cocktail category with pagination
+ * @param index - Starting position for pagination (default: 0)
+ * @param limit - Number of items per page (default: 10)
+ */
+export const fetchCocktailsByCategory = async (
+  index: number = 0,
+  limit: number = 10
+): Promise<FilteredCocktail[]> => {
+  const params: SearchParams = {
+    index,
+    limit,
+  };
+
+  const url = buildUrl(`${API_BASE_URL}/filter/cocktails`, params);
+  const response = await fetchFromApi<FilteredCocktailResponse>(url);
+  return response.drinks;
+};

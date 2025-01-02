@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { fetchCocktails } from "../services/cocktails/cocktailService";
+import {
+  fetchCocktails,
+  fetchCocktailsByCategory,
+} from "../services/cocktails/cocktailService";
 import { Cocktail } from "../services/types";
 import Header from "../components/Header";
 import CocktailCard from "../components/CocktailCard/CocktailCard";
@@ -28,22 +31,20 @@ const Home = () => {
   const [limit] = useState(10); // Items per page
   const [loading, setLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-
-  // Default search term when no query exists
-  const DEFAULT_SEARCH = "margarita";
+  const [isDefaultView, setIsDefaultView] = useState(true);
 
   /**
    * Handles search input changes
    * Updates both visible input and internal query
    * Resets pagination when search changes
-   * Uses "margarita" as default search when input is empty
    */
   const handleSearch = (value: string) => {
     setIsSearching(true);
     setCocktails([]); // Clear existing data when search starts
     const searchTerm = value.trim();
     setDisplayValue(searchTerm); // Only show what user typed
-    setQuery(searchTerm || DEFAULT_SEARCH); // Use default search if empty
+    setQuery(searchTerm);
+    setIsDefaultView(!searchTerm); // Set to default view if search is empty
     setIndex(0);
     setSearchParams(
       searchTerm ? { q: searchTerm } : {}, // Only set URL param if there's a search
@@ -59,9 +60,11 @@ const Home = () => {
     const queryParam = searchParams.get("q");
     if (queryParam) {
       handleSearch(queryParam);
+      setIsDefaultView(false);
     } else {
-      // Load default search without showing it in input
-      setQuery(DEFAULT_SEARCH);
+      // Show default alcoholic drinks view
+      setIsDefaultView(true);
+      setQuery("");
     }
   }, []); // Keep as mount-only to prevent search loop
 
@@ -69,35 +72,50 @@ const Home = () => {
    * Fetch cocktails when search parameters change
    */
   useEffect(() => {
-    // Only fetch if we have a query
-    if (query) {
+    const getCocktails = async () => {
+      try {
+        setLoading(true);
+        let results;
+        if (isDefaultView) {
+          results = await fetchCocktailsByCategory(index, limit);
+          const mappedResults = results.map((drink) => ({
+            ...drink,
+            category: "Cocktail",
+            popular: false,
+            instructions: undefined,
+            ingredients: undefined,
+            measures: undefined,
+            tags: null,
+            video: null,
+            iba: null,
+            alcoholic: undefined,
+            glass: undefined,
+          }));
+          setCocktails(mappedResults);
+        } else if (query) {
+          results = await fetchCocktails(query, index, limit);
+          setCocktails(results);
+        }
+      } catch (error) {
+        console.error("Failed to fetch cocktails", error);
+      } finally {
+        setLoading(false);
+        setIsSearching(false);
+      }
+    };
+
+    if (isDefaultView || query) {
       getCocktails();
     }
-  }, [query, index, limit]); // Remove unnecessary dependencies
-
-  /**
-   * Initialize search from URL parameters when component mounts
-   * or when URL search params change
-   * Moved outside of useEffect to prevent initial load from being blocked and for access
-   */
-  const getCocktails = async () => {
-    try {
-      setLoading(true);
-      const results = await fetchCocktails(query, index, limit);
-      setCocktails(results);
-    } catch (error) {
-      console.error("Failed to fetch cocktails", error);
-    } finally {
-      setLoading(false);
-      setIsSearching(false);
-    }
-  };
+  }, [query, index, limit, isDefaultView]); // Add isDefaultView to dependencies
 
   return (
     <>
       <Header displayValue={displayValue} onSearch={handleSearch} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
-        <h2 className="mb-4">All Drinks</h2>
+        <h2 className="mb-4">
+          {isDefaultView ? "All Drinks" : "Search Results"}
+        </h2>
 
         {/* Content Container with fixed height */}
         <div className="min-h-[600px]">

@@ -25,6 +25,12 @@ process.removeAllListeners("warning");
 // Base URL for the CocktailDB API
 const COCKTAIL_DB_BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1";
 
+// Log incoming requests for debugging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
 /**
  * Helper function to extract ingredients from CocktailDB response
  * CocktailDB stores ingredients in numbered properties (strIngredient1, strIngredient2, etc.)
@@ -136,6 +142,143 @@ app.get("/api/cocktail/:id", async (req, res) => {
       id: req.params.id,
       error: "Failed to fetch cocktail details",
     });
+  }
+});
+
+/**
+ * GET /api/search
+ * Search cocktails by name
+ */
+app.get("/api/search", async (req, res) => {
+  try {
+    const { query = "", index = 0, limit = 10 } = req.query;
+    console.log("Search params:", { query, index, limit });
+    const searchUrl = query
+      ? `${COCKTAIL_DB_BASE_URL}/search.php?s=${encodeURIComponent(query)}`
+      : `${COCKTAIL_DB_BASE_URL}/filter.php?c=Cocktail`;
+    console.log("Searching CocktailDB:", searchUrl);
+
+    const response = await fetch(searchUrl);
+    const data = await response.json();
+
+    if (!data.drinks) {
+      return res.json({
+        drinks: [],
+        totalCount: 0,
+        pagination: {
+          currentPage: 0,
+          totalPages: 0,
+          pageSize: parseInt(limit),
+          startIndex: parseInt(index),
+          endIndex: parseInt(index),
+          hasMore: false,
+        },
+      });
+    }
+
+    const drinks = data.drinks || [];
+    const formattedDrinks = drinks.map((drink) =>
+      query
+        ? {
+            id: parseInt(drink.idDrink),
+            name: drink.strDrink,
+            category: drink.strCategory,
+            image: drink.strDrinkThumb,
+            instructions: drink.strInstructions,
+            ingredients: getIngredients(drink),
+            measures: getMeasures(drink),
+            tags: drink.strTags,
+            video: drink.strVideo,
+            iba: drink.strIBA,
+            alcoholic: drink.strAlcoholic,
+            glass: drink.strGlass,
+          }
+        : {
+            id: parseInt(drink.idDrink),
+            name: drink.strDrink,
+            category: "Cocktail",
+            image: drink.strDrinkThumb,
+          }
+    );
+
+    // Handle pagination
+    const startIdx = parseInt(index);
+    const endIdx = startIdx + parseInt(limit);
+    const paginatedDrinks = formattedDrinks.slice(startIdx, endIdx);
+
+    res.json({
+      drinks: paginatedDrinks,
+      totalCount: drinks.length,
+      pagination: {
+        currentPage: Math.floor(startIdx / parseInt(limit)),
+        totalPages: Math.ceil(drinks.length / parseInt(limit)),
+        pageSize: parseInt(limit),
+        startIndex: startIdx,
+        endIndex: endIdx,
+        hasMore: endIdx < drinks.length,
+      },
+    });
+  } catch (error) {
+    console.error("Error searching cocktails:", error);
+    res.status(500).json({ error: "Failed to search cocktails" });
+  }
+});
+
+/**
+ * GET /api/filter/cocktails
+ * Get all drinks in the Cocktail category
+ */
+app.get("/api/filter/cocktails", async (req, res) => {
+  try {
+    const { index = 0, limit = 10 } = req.query;
+    const filterUrl = `${COCKTAIL_DB_BASE_URL}/filter.php?c=Cocktail`;
+    console.log("Filtering cocktail category:", filterUrl);
+
+    const response = await fetch(filterUrl);
+    const data = await response.json();
+
+    if (!data.drinks) {
+      return res.json({
+        drinks: [],
+        totalCount: 0,
+        pagination: {
+          currentPage: 0,
+          totalPages: 0,
+          pageSize: parseInt(limit),
+          startIndex: parseInt(index),
+          endIndex: parseInt(index),
+          hasMore: false,
+        },
+      });
+    }
+
+    const drinks = data.drinks || [];
+    const formattedDrinks = drinks.map((drink) => ({
+      id: parseInt(drink.idDrink),
+      name: drink.strDrink,
+      image: drink.strDrinkThumb,
+    }));
+
+    // Handle pagination
+    const startIdx = parseInt(index);
+    const endIdx = startIdx + parseInt(limit);
+    const paginatedDrinks = formattedDrinks.slice(startIdx, endIdx);
+
+    res.json({
+      drinks: paginatedDrinks,
+      totalCount: drinks.length,
+      pagination: {
+        currentPage: Math.floor(startIdx / parseInt(limit)),
+        totalPages: Math.ceil(drinks.length / parseInt(limit)),
+        pageSize: parseInt(limit),
+        startIndex: startIdx,
+        endIndex: endIdx,
+        hasMore: endIdx < drinks.length,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching cocktail category:", error);
+    res.status(500).json({ error: "Failed to fetch cocktail category" });
   }
 });
 
