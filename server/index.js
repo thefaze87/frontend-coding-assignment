@@ -3,13 +3,21 @@ import cors from "cors";
 import fetch from "node-fetch";
 
 /**
- * Express server configuration for CocktailDB API proxy
- * Provides endpoints for:
- * - Searching cocktails
- * - Getting cocktail details
- * - Searching by first letter
- * - Getting popular cocktails
- * - Searching ingredients
+ * Express Server - CocktailDB API Proxy
+ *
+ * Provides a clean API interface between frontend and CocktailDB:
+ * - Standardized response formats
+ * - Error handling
+ * - Request logging
+ * - CORS support
+ * - Pagination
+ *
+ * Design Pattern: RESTful API with middleware
+ * Error Handling: Consistent error responses
+ * Performance: Response formatting on server
+ *
+ * @maintainer Mark Fasel
+ * @lastUpdated 2025-01-02
  */
 
 const app = express();
@@ -283,11 +291,20 @@ app.get("/api/filter/cocktails", async (req, res) => {
 });
 
 /**
- * GET /api/filter
- * Filter cocktails by category or alcoholic content
- * Supports:
- * - category: Ordinary_Drink, Cocktail
- * - alcoholic: Alcoholic, Non_Alcoholic
+ * Filter Endpoint
+ * Handles cocktail filtering by category and alcohol content
+ *
+ * Design Decisions:
+ * - Single endpoint with type parameter for flexibility
+ * - Server-side pagination for performance
+ * - Consistent response structure
+ * - Error boundary implementation
+ *
+ * @route GET /api/filter
+ * @param {string} type - Filter type ('category' or 'alcoholic')
+ * @param {string} value - Filter value
+ * @param {number} index - Pagination start index
+ * @param {number} limit - Items per page
  */
 app.get("/api/filter", async (req, res) => {
   try {
@@ -364,6 +381,53 @@ app.get("/api/filter", async (req, res) => {
       message: error.message,
     });
   }
+});
+
+/**
+ * Shorthand Filter Endpoints
+ * Convenience routes for common filter operations
+ *
+ * Design Pattern: Facade pattern for common queries
+ * Benefits:
+ * - Simplified client usage
+ * - Consistent parameter handling
+ * - Maintainable route structure
+ */
+
+app.get("/api/filter/alcoholic", async (req, res) => {
+  req.query.type = "alcoholic";
+  req.query.value = "Alcoholic";
+  await app.handle(req, res);
+});
+
+/**
+ * GET /api/filter/non-alcoholic
+ * Shorthand endpoint for non-alcoholic drinks
+ */
+app.get("/api/filter/non-alcoholic", async (req, res) => {
+  req.query.type = "alcoholic";
+  req.query.value = "Non_Alcoholic";
+  await app.handle(req, res);
+});
+
+/**
+ * GET /api/filter/ordinary-drink
+ * Shorthand endpoint for ordinary drinks
+ */
+app.get("/api/filter/ordinary-drink", async (req, res) => {
+  req.query.type = "category";
+  req.query.value = "Ordinary_Drink";
+  await app.handle(req, res);
+});
+
+/**
+ * GET /api/filter/cocktail
+ * Shorthand endpoint for cocktails
+ */
+app.get("/api/filter/cocktail", async (req, res) => {
+  req.query.type = "category";
+  req.query.value = "Cocktail";
+  await app.handle(req, res);
 });
 
 // ... (other endpoints)
