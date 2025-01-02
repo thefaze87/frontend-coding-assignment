@@ -8,17 +8,17 @@ The purpose of this exercise is to give us an example of your work within bounds
 
 We would like you to build a React app that consumes a public API. The public API consists of two endpoints:
 
-* A pageable endpoint that allows for searching
-* An endpoint that accepts an id, and provides details on a specific object
+- A pageable endpoint that allows for searching
+- An endpoint that accepts an id, and provides details on a specific object
 
 The React app should match as closely as possible the design found in this [Figma](https://www.figma.com/design/au6L5XqQ0VjanC9dlgdlmI/Dev-Homework?node-id=2532-2&m=dev&t=xoqFPCWRT0d9yNZp-1). If you want access to pixel perfect measurements, you'll need to log into Figma with an account you create or already have.
 
 ### Requirements
 
-* Clone this repo as a starting point for the assignment. It was created using [Create React App](https://create-react-app.dev/) and has been configured with [Typescript](https://www.typescriptlang.org/) and [TailwindCSS](https://tailwindcss.com/).
-* You can build this with any node modules or services you see fit.
-* We have included the [Jest](https://jestjs.io/) test framework for your convenience and expect to see tests that exercise the behavior of the code you write.
-* We have included the assets for the Figma design in the `src/assets` folder.
+- Clone this repo as a starting point for the assignment. It was created using [Create React App](https://create-react-app.dev/) and has been configured with [Typescript](https://www.typescriptlang.org/) and [TailwindCSS](https://tailwindcss.com/).
+- You can build this with any node modules or services you see fit.
+- We have included the [Jest](https://jestjs.io/) test framework for your convenience and expect to see tests that exercise the behavior of the code you write.
+- We have included the assets for the Figma design in the `src/assets` folder.
 
 ### Specifications
 
@@ -97,4 +97,200 @@ We're flexible in how you submit your work. If you want to .zip it up and email 
 
 This is just an exercise. While the methods and approaches you take to problems should be indicative of how you would approach a problem in a production environment, we don't expect any over-the-top work here. Don't spend tons of time on it. If you think something really needs a complex solution that would take a lot of work, implement a lesser solution, write a note in comments about a proper solution, and we can discuss it.
 
+# Cocktail Search Application - Details
 
+### Mark Fasel
+
+## Overview
+
+A React-based cocktail search application that allows users to discover and explore cocktail recipes. Built with TypeScript, React, and modern web development practices.
+
+## Features
+
+- 🔍 Real-time cocktail search
+- 📱 Responsive design
+- 🎨 Modern UI with Tailwind CSS
+- 📊 Pagination support
+- 🔄 URL-based state management
+- 🧪 Comprehensive test coverage
+- 🚀 Performance optimized
+
+## Technical Stack
+
+- **Frontend**: React, TypeScript, Tailwind CSS
+- **Backend**: Express.js
+- **Testing**: Jest, React Testing Library
+- **State Management**: URL-based with React Router
+- **Styling**: Hybrid approach (Tailwind + SCSS)
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
+
+bash
+
+### Clone the repository
+
+git clone [repository-url]
+
+### Install dependencies
+
+npm install
+
+### Start the development server
+
+npm start
+
+### Start the API server (in a separate terminal)
+
+cd server
+npm install
+npm start
+
+## API Integration
+
+The application integrates with TheCocktailDB API through a proxy server that:
+
+- Handles rate limiting
+- Provides consistent error handling
+- Implements pagination
+- Standardizes response formats
+
+### API Endpoints
+
+- `/api/search` - Search cocktails by name
+- `/api/cocktail/:id` - Get detailed cocktail information
+- `/api/popular` - Fetch popular cocktails
+- `/api/ingredients/search` - Search ingredients
+
+## Design Decisions
+
+### 1. State Management
+
+Chose URL-based state management over Redux/Context for:
+
+- Shareable search results
+- Browser history integration
+- Simplified state persistence
+
+### 2. Styling Approach
+
+Implemented a hybrid styling solution:
+
+- Tailwind CSS for rapid UI development
+- SCSS for custom components
+- CSS Modules for component isolation
+
+### 3. Type Safety
+
+- Comprehensive TypeScript implementation
+- Strict type checking
+- Interface-driven development
+
+### 4. Testing Strategy
+
+- Unit tests for utilities
+- Integration tests for API
+- Component testing with React Testing Library
+
+## Planned Enhancements
+
+### 1. Advanced Filtering
+
+Started implementing but paused due to time constraints:
+
+- Filter by category (Cocktail/Ordinary Drink)
+- Filter by alcohol content
+- Multiple filter combination
+
+### 2. Performance Optimizations
+
+- Image lazy loading
+- Component code splitting
+- API response caching
+
+### 3. Additional Features
+
+- User favorites
+- Recipe sharing
+- Print-friendly view
+- Mobile app conversion potential
+
+## Development Process
+
+### Phase 1: Core Implementation
+
+- Set up project structure
+- Implemented basic search
+- Added pagination
+- Established testing framework
+
+### Phase 2: UI/UX Enhancement
+
+- Responsive design implementation
+- Loading states
+- Error handling
+- Accessibility improvements
+
+### Phase 3: Advanced Features (Partial)
+
+- Started filter implementation
+- Began work on advanced search
+- Initiated performance optimizations
+
+## Challenges & Solutions
+
+### 1. Type Safety vs Flexibility
+
+- Challenge: Balancing strict typing with API responses
+- Solution: Created intermediate interfaces and type guards
+
+### 2. State Management
+
+- Challenge: Complex filter state management
+- Solution: URL-based state with custom hooks
+
+### 3. Performance
+
+- Challenge: Large dataset handling
+- Solution: Implemented pagination and lazy loading
+
+## Future Improvements
+
+### 1. Technical Debt
+
+- Refactor filter implementation
+- Improve error boundary coverage
+- Enhance test coverage
+
+### 2. Feature Additions
+
+- Advanced sorting options
+- User authentication
+- Recipe collections
+- Social sharing
+
+### 3. Performance
+
+- Server-side rendering
+- Progressive Web App features
+- API response caching
+
+## Contributing
+
+Contributions are welcome! Please read our contributing guidelines and code of conduct.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- TheCocktailDB for the API
+- React community for inspiration and resources
+- Team members and reviewers for feedback

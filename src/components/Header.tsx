@@ -37,7 +37,7 @@ const Header = ({ displayValue, onSearch }: HeaderProps) => {
     <header className="border-b border-white/20 w-full">
       <div className="w-full px-8 py-4 flex justify-between items-center">
         {/* App Title */}
-        <h1>BarCraft</h1>
+        <h1 className="w-1/3">BarCraft</h1>
 
         {/* Search Bar Container */}
         <form
@@ -70,7 +70,7 @@ const Header = ({ displayValue, onSearch }: HeaderProps) => {
         </form>
 
         {/* Spacer for layout balance */}
-        <div className="w-[180px]"></div>
+        <div className="w-1/3"></div>
       </div>
     </header>
   );
