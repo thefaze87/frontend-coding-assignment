@@ -2,7 +2,7 @@ import {
   fetchCocktails,
   fetchCocktailsByLetter,
   fetchPopularCocktails,
-  fetchAlcoholicCocktails,
+  fetchCocktailsByCategory,
 } from "../cocktailService";
 import { fetchFromApi, buildUrl } from "../../api/apiService";
 import { CocktailResponse } from "../types";
@@ -19,12 +19,11 @@ import { CocktailResponse } from "../types";
 jest.mock("../../api/apiService", () => ({
   fetchFromApi: jest.fn(),
   buildUrl: jest.fn((baseUrl, params) => {
-    // Simulate URL building for testing
+    // Return a proper URL for testing
     const parts = [];
     if (params.query) parts.push(`query=${params.query}`);
     if (params.index !== undefined) parts.push(`index=${params.index}`);
     if (params.limit !== undefined) parts.push(`limit=${params.limit}`);
-    if (params.firstLetter) parts.push(`firstLetter=${params.firstLetter}`);
     return parts.length ? `${baseUrl}?${parts.join("&")}` : baseUrl;
   }),
 }));
@@ -163,44 +162,68 @@ describe("cocktailService", () => {
     });
   });
 
-  describe("fetchAlcoholicCocktails", () => {
-    it("should fetch alcoholic cocktails with pagination", async () => {
-      const mockResponse = {
-        drinks: [
-          {
-            id: 11007,
-            name: "Margarita",
-            image: "https://example.com/margarita.jpg",
-          },
-        ],
-        totalCount: 1,
-        pagination: {
-          currentPage: 0,
-          totalPages: 1,
-          pageSize: 10,
-          startIndex: 0,
-          endIndex: 1,
-          hasMore: false,
+  describe("fetchCocktailsByCategory", () => {
+    // Setup specific mock response for category filtering
+    const categoryMockResponse = {
+      drinks: [
+        {
+          id: 11007,
+          name: "Margarita",
+          image: "https://example.com/margarita.jpg",
         },
-      };
+      ],
+      totalCount: 1,
+      pagination: {
+        currentPage: 0,
+        totalPages: 1,
+        pageSize: 10,
+        startIndex: 0,
+        endIndex: 1,
+        hasMore: false,
+      },
+    };
 
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockResponse),
-      });
+    beforeEach(() => {
+      // Override the default mock for these specific tests
+      (fetchFromApi as jest.Mock).mockResolvedValue(categoryMockResponse);
+    });
 
-      const result = await fetchAlcoholicCocktails();
-      expect(result).toEqual(mockResponse.drinks);
+    it("should fetch cocktails by category with pagination", async () => {
+      const result = await fetchCocktailsByCategory();
+      expect(result).toEqual(categoryMockResponse.drinks);
+      expect(buildUrl).toHaveBeenCalledWith(
+        "http://localhost:4000/api/filter/cocktails",
+        {
+          index: 0,
+          limit: 10,
+        }
+      );
     });
 
     it("should handle empty response", async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ drinks: [] }),
-      });
+      const emptyResponse = {
+        drinks: [],
+        totalCount: 0,
+        pagination: {
+          currentPage: 0,
+          totalPages: 0,
+          pageSize: 10,
+          startIndex: 0,
+          endIndex: 0,
+          hasMore: false,
+        },
+      };
+      (fetchFromApi as jest.Mock).mockResolvedValue(emptyResponse);
 
-      const result = await fetchAlcoholicCocktails();
+      const result = await fetchCocktailsByCategory();
       expect(result).toEqual([]);
+      expect(buildUrl).toHaveBeenCalledWith(
+        "http://localhost:4000/api/filter/cocktails",
+        {
+          index: 0,
+          limit: 10,
+        }
+      );
     });
   });
 });

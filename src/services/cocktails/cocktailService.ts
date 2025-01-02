@@ -55,7 +55,6 @@ export const fetchCocktails = async (
   };
 
   const url = buildUrl(`${API_BASE_URL}/search`, params);
-  console.log("Fetching from URL:", url); // Debug log
   const response = await fetchFromApi<CocktailResponse>(url);
   return response.drinks;
 };
