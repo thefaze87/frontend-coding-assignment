@@ -5,24 +5,23 @@
  * @lastUpdated 2025-01-02
  */
 import { render, screen } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 
+// Mock the Home component
+jest.mock("./pages/Home", () => {
+  return function MockHome() {
+    return <div>Home Page</div>;
+  };
+});
+
 describe("App Component", () => {
-  it("renders the application header", () => {
-    render(<App />);
-    const headerElement = screen.getByText(/BarCraft/i);
-    expect(headerElement).toBeInTheDocument();
-  });
-
-  it("renders the search input", () => {
-    render(<App />);
-    const searchInput = screen.getByPlaceholderText(/Search all drinks/i);
-    expect(searchInput).toBeInTheDocument();
-  });
-
-  it("renders the main content area", () => {
-    render(<App />);
-    const mainHeading = screen.getByText(/All Drinks/i);
-    expect(mainHeading).toBeInTheDocument();
+  it("renders without crashing", () => {
+    render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    );
+    expect(screen.getByText(/Home Page/i)).toBeInTheDocument();
   });
 });

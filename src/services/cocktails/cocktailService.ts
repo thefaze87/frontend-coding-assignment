@@ -5,8 +5,6 @@ import {
   IngredientResponse,
   CocktailDetailsResponse,
   Cocktail,
-  FilteredCocktail,
-  FilteredCocktailResponse,
   FilteredResponse,
 } from "../types";
 
@@ -49,7 +47,13 @@ export const fetchCocktails = async (
   index: number = 0,
   limit: number = 10
 ): Promise<CocktailResponse> => {
-  const url = `${API_BASE_URL}/search?query=${encodeURIComponent(query)}&index=${index}&limit=${limit}`;
+  const params: SearchParams = {
+    query,
+    index,
+    limit,
+  };
+
+  const url = buildUrl(`${API_BASE_URL}/search`, params);
   return await fetchFromApi<CocktailResponse>(url);
 };
 

@@ -1,4 +1,4 @@
-import { SearchParams, CocktailResponse, IngredientResponse } from "../types";
+import { SearchParams } from "../types";
 
 /**
  * Builds a URL with query parameters for API requests

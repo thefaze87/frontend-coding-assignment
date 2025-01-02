@@ -294,3 +294,11 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - TheCocktailDB for the API
 - React community for inspiration and resources
 - Team members and reviewers for feedback
+
+### Loom Video Overviews of the Working Product and Brief Overview of the Code
+
+- https://www.loom.com/share/dcc2e40f713f435481464fe26b1cf12e?sid=510d95c9-611f-4e31-bf4b-f3c19eafc211
+- https://www.loom.com/share/b590686a8eca423b90e7f22f1399f3ea?sid=cd772eb9-704e-45b9-a65b-d112406cb05c
+- https://www.loom.com/share/deaf2f8af7654ae0810772166504b350?sid=b599d0ea-c55c-4ff6-a3f4-e416be7eb0cd
+- https://www.loom.com/share/f489356ff7ac4c25922a71bddb1a5024?sid=0edfb040-9981-42ed-ad28-dfcd19380532
+- https://www.loom.com/share/81385187423949388bfaec3b629f0bf8?sid=ea6523dd-dd7d-457f-9bf3-b53129c713fb

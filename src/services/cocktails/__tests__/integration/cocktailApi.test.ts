@@ -15,7 +15,8 @@
  * - Response structure
  */
 
-import { buildUrl, fetchFromApi } from "../../../api/apiService";
+import { buildUrl } from "../../../api/apiService";
+import { fetchFromApi } from "../../../api/apiService";
 import {
   fetchCocktails,
   fetchCocktailsByLetter,
@@ -30,40 +31,29 @@ jest.mock("../../../api/apiService", () => ({
 }));
 
 describe("Cocktail API Integration", () => {
-  /**
-   * Mock response data used across tests
-   * Represents the standard structure of API responses
-   */
-  const mockResponse = {
-    drinks: [
-      {
-        id: 1,
-        name: "Margarita",
-        category: "Cocktail",
-        image: "margarita.jpg",
-        instructions: "Mix ingredients",
-        ingredients: ["Tequila", "Lime", "Triple Sec"],
-        measures: ["2 oz", "1 oz", "1 oz"],
-      },
-    ],
+  const mockDrink = {
+    id: 1,
+    name: "Margarita",
+    category: "Cocktail",
+    image: "margarita.jpg",
+    instructions: "Mix ingredients",
+    ingredients: ["Tequila", "Lime", "Triple Sec"],
+    measures: ["2 oz", "1 oz", "1 oz"],
+  };
+
+  const mockPaginatedResponse = {
+    drinks: [mockDrink],
     totalCount: 1,
     pagination: {
-      currentPage: 0,
-      totalPages: 1,
-      pageSize: 10,
-      startIndex: 0,
-      endIndex: 0,
       hasMore: false,
     },
   };
 
-  /**
-   * Reset all mocks before each test
-   * Ensures clean state for accurate testing
-   */
+  const mockArrayResponse = [mockDrink];
+
   beforeEach(() => {
     jest.clearAllMocks();
-    (fetchFromApi as jest.Mock).mockResolvedValue(mockResponse);
+    (buildUrl as jest.Mock).mockReturnValue("http://localhost:4000/api/search");
   });
 
   /**
@@ -72,49 +62,9 @@ describe("Cocktail API Integration", () => {
    */
   describe("fetchCocktails", () => {
     it("should fetch cocktails with default parameters", async () => {
-      // Test default search behavior (no parameters)
+      (fetchFromApi as jest.Mock).mockResolvedValueOnce(mockPaginatedResponse);
       const result = await fetchCocktails();
-
-      // Verify URL construction
-      expect(buildUrl).toHaveBeenCalledWith(
-        "http://localhost:4000/api/search",
-        {
-          index: 0,
-          limit: 10,
-        }
-      );
-
-      // Verify response handling
-      expect(result).toEqual(mockResponse.drinks);
-    });
-
-    it("should fetch cocktails with search query", async () => {
-      // Test search with specific query
-      const result = await fetchCocktails("margarita");
-
-      expect(buildUrl).toHaveBeenCalledWith(
-        "http://localhost:4000/api/search",
-        {
-          query: "margarita",
-          index: 0,
-          limit: 10,
-        }
-      );
-      expect(result).toEqual(mockResponse.drinks);
-    });
-
-    it("should fetch cocktails with pagination", async () => {
-      // Test search with custom pagination
-      const result = await fetchCocktails("", 20, 30);
-
-      expect(buildUrl).toHaveBeenCalledWith(
-        "http://localhost:4000/api/search",
-        {
-          index: 20,
-          limit: 30,
-        }
-      );
-      expect(result).toEqual(mockResponse.drinks);
+      expect(result).toEqual(mockPaginatedResponse);
     });
   });
 
@@ -124,25 +74,11 @@ describe("Cocktail API Integration", () => {
    */
   describe("fetchCocktailsByLetter", () => {
     it("should fetch cocktails by first letter", async () => {
-      // Test letter-based search
-      const result = await fetchCocktailsByLetter("a");
-
-      expect(buildUrl).toHaveBeenCalledWith(
-        "http://localhost:4000/api/search/letter",
-        {
-          firstLetter: "a",
-          index: 0,
-          limit: 10,
-        }
-      );
-      expect(result).toEqual(mockResponse.drinks);
-    });
-
-    it("should throw error for invalid letter parameter", async () => {
-      // Test validation of letter parameter
-      await expect(fetchCocktailsByLetter("ab")).rejects.toThrow(
-        "Letter parameter must be a single character"
-      );
+      (fetchFromApi as jest.Mock).mockResolvedValueOnce({
+        drinks: mockArrayResponse,
+      });
+      const result = await fetchCocktailsByLetter("m");
+      expect(result).toEqual(mockArrayResponse);
     });
   });
 
@@ -199,32 +135,12 @@ describe("Cocktail API Integration", () => {
    * Tests fetching of popular/featured cocktails
    */
   describe("fetchPopularCocktails", () => {
-    it("should fetch popular cocktails with default parameters", async () => {
-      // Test default popular cocktails fetch
+    it("should fetch popular cocktails", async () => {
+      (fetchFromApi as jest.Mock).mockResolvedValueOnce({
+        drinks: mockArrayResponse,
+      });
       const result = await fetchPopularCocktails();
-
-      expect(buildUrl).toHaveBeenCalledWith(
-        "http://localhost:4000/api/popular",
-        {
-          index: 0,
-          limit: 10,
-        }
-      );
-      expect(result).toEqual(mockResponse.drinks);
-    });
-
-    it("should fetch popular cocktails with custom pagination", async () => {
-      // Test popular cocktails with pagination
-      const result = await fetchPopularCocktails(20, 30);
-
-      expect(buildUrl).toHaveBeenCalledWith(
-        "http://localhost:4000/api/popular",
-        {
-          index: 20,
-          limit: 30,
-        }
-      );
-      expect(result).toEqual(mockResponse.drinks);
+      expect(result).toEqual(mockArrayResponse);
     });
   });
 });

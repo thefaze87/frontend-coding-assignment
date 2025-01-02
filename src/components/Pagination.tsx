@@ -1,4 +1,3 @@
-import React from "react";
 import nextIcon from "../assets/icons/Next-Icon.svg";
 import prevIcon from "../assets/icons/Prev-Icon.svg";
 
