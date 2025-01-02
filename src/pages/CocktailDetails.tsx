@@ -155,7 +155,12 @@ const CocktailDetails = () => {
   // Render cocktail details
   return (
     <div className="cocktail-details">
-      <Header displayValue={displayValue} onSearch={handleSearch} />
+      <Header
+        displayValue={displayValue}
+        onSearch={handleSearch}
+        activeFilter={null}
+        onFilterChange={() => {}}
+      />
       <div className="w-630 mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Navigation back to search. Wasn't in the design doc, but I added it to help with navigation and user experience. */}
         <Link to="/" className="text-white mb-4 inline-block hover:underline">

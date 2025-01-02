@@ -19,6 +19,7 @@ import {
  *
  * Main landing page featuring:
  * - Cocktail search and display
+ * - Category filtering
  * - Pagination with boundary handling
  * - Loading states
  * - URL-based search persistence
@@ -112,9 +113,23 @@ const Home = () => {
   const totalPages = Math.ceil(totalCount / limit);
   const showPagination = cocktails.length > 0 && totalCount > limit;
 
+  /**
+   * Handles filter changes
+   * Resets pagination and updates results
+   */
+  const handleFilterChange = (endpoint: string | null) => {
+    setActiveFilter(endpoint);
+    setIndex(0); // Reset pagination when filter changes
+  };
+
   return (
     <>
-      <Header displayValue={displayValue} onSearch={handleSearch} />
+      <Header
+        displayValue={displayValue}
+        onSearch={handleSearch}
+        activeFilter={activeFilter}
+        onFilterChange={handleFilterChange}
+      />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
         <h2 className="mb-4">
           {isDefaultView ? "All Drinks" : `Search Results: ${query}`}
