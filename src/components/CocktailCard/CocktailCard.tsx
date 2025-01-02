@@ -56,7 +56,7 @@ const CocktailCard = ({ cocktail, loading = false }: CocktailCardProps) => {
           <h3 className="cocktail-name text-lg text-whit">{cocktail.name}</h3>
           <div className="flex items-center space-x-2">
             <span className="cocktail-category rounded-lg px-2 py-2 border-1 border-white">
-              {cocktail.alcoholic || cocktail.category}
+              {cocktail.category}
             </span>
           </div>
         </div>

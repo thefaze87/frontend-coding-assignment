@@ -36,6 +36,9 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [isDefaultView, setIsDefaultView] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   /**
    * Handles search input changes
@@ -73,46 +76,43 @@ const Home = () => {
   }, []); // Keep as mount-only to prevent search loop
 
   /**
-   * Fetch cocktails when search parameters or filters change
+   * Fetch cocktails when search parameters change
    */
   useEffect(() => {
     const getCocktails = async () => {
       try {
         setLoading(true);
-        let results;
-        if (isDefaultView) {
-          results = await fetchCocktailsByCategory(index, limit);
-          const mappedResults = results.map((drink) => ({
-            ...drink,
-            category: "Cocktail",
-            popular: false,
-            instructions: undefined,
-            ingredients: undefined,
-            measures: undefined,
-            tags: null,
-            video: null,
-            iba: null,
-            alcoholic: undefined,
-            glass: undefined,
-          }));
-          setCocktails(mappedResults);
-        } else if (query) {
-          results = await fetchCocktails(query, index, limit);
-          setCocktails(results);
-        }
+        const results = await fetchFilteredCocktails(
+          activeFilter,
+          index,
+          limit
+        );
+        setCocktails(results.drinks);
+        setTotalCount(results.totalCount);
+        setHasMore(results.pagination?.hasMore || false);
       } catch (error) {
         console.error("Failed to fetch cocktails", error);
-        setCocktails([]); // Clear on error
       } finally {
         setLoading(false);
-        setIsSearching(false);
       }
     };
 
-    if (isDefaultView || query) {
-      getCocktails();
-    }
-  }, [query, index, limit, isDefaultView]); // Add isDefaultView to dependencies
+    getCocktails();
+  }, [activeFilter, index, limit]);
+
+  // Calculate pagination state
+  const currentPage = Math.floor(index / limit) + 1;
+  const totalPages = Math.ceil(totalCount / limit);
+  const showPagination = cocktails.length > 0 && totalCount > limit;
+
+  /**
+   * Handles filter changes
+   * Resets pagination and updates results
+   */
+  const handleFilterChange = (endpoint: string | null) => {
+    setActiveFilter(endpoint);
+    setIndex(0); // Reset pagination when filter changes
+  };
 
   return (
     <>
@@ -123,7 +123,9 @@ const Home = () => {
         onFilterChange={handleFilterChange}
       />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
-        <h2 className="mb-4">{isDefaultView ? "All Drinks" : filterLabel}</h2>
+        <h2 className="mb-4">
+          {isDefaultView ? "All Drinks" : `Search Results: ${query}`}
+        </h2>
 
         {/* Content Container with fixed height */}
         <div className="min-h-[600px]">

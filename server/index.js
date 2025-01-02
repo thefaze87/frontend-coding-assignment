@@ -385,147 +385,52 @@ app.get("/api/filter", async (req, res) => {
 
 /**
  * Shorthand Filter Endpoints
+ * Convenience routes for common filter operations
+ *
+ * Design Pattern: Facade pattern for common queries
+ * Benefits:
+ * - Simplified client usage
+ * - Consistent parameter handling
+ * - Maintainable route structure
  */
+
 app.get("/api/filter/alcoholic", async (req, res) => {
-  try {
-    const { index = 0, limit = 10 } = req.query;
-    const filterUrl = `${COCKTAIL_DB_BASE_URL}/filter.php?a=Alcoholic`;
-
-    const response = await fetch(filterUrl);
-    const data = await response.json();
-
-    if (!data.drinks) {
-      return res.json({
-        drinks: [],
-        totalCount: 0,
-        pagination: {
-          currentPage: 0,
-          totalPages: 0,
-          pageSize: parseInt(limit),
-          startIndex: parseInt(index),
-          endIndex: parseInt(index),
-          hasMore: false,
-        },
-      });
-    }
-
-    // Format and paginate results
-    const startIdx = parseInt(index);
-    const endIdx = startIdx + parseInt(limit);
-    const paginatedDrinks = data.drinks
-      .slice(startIdx, endIdx)
-      .map((drink) => ({
-        id: parseInt(drink.idDrink),
-        name: drink.strDrink,
-        image: drink.strDrinkThumb,
-        alcoholic: "Alcoholic",
-      }));
-
-    res.json({
-      drinks: paginatedDrinks,
-      totalCount: data.drinks.length,
-      pagination: {
-        currentPage: Math.floor(startIdx / parseInt(limit)),
-        totalPages: Math.ceil(data.drinks.length / parseInt(limit)),
-        pageSize: parseInt(limit),
-        startIndex: startIdx,
-        endIndex: endIdx,
-        hasMore: endIdx < data.drinks.length,
-      },
-    });
-  } catch (error) {
-    console.error("Error filtering drinks:", error);
-    res.status(500).json({ error: "Failed to filter drinks" });
-  }
+  req.query.type = "alcoholic";
+  req.query.value = "Alcoholic";
+  await app.handle(req, res);
 });
 
+/**
+ * GET /api/filter/non-alcoholic
+ * Shorthand endpoint for non-alcoholic drinks
+ */
 app.get("/api/filter/non-alcoholic", async (req, res) => {
-  const newReq = {
-    ...req,
-    url: "/api/filter",
-    query: {
-      ...req.query,
-      type: "alcoholic",
-      value: "Non_Alcoholic",
-    },
-  };
-  app.handle(newReq, res);
+  req.query.type = "alcoholic";
+  req.query.value = "Non_Alcoholic";
+  await app.handle(req, res);
 });
 
+/**
+ * GET /api/filter/ordinary-drink
+ * Shorthand endpoint for ordinary drinks
+ */
 app.get("/api/filter/ordinary-drink", async (req, res) => {
-  const newReq = {
-    ...req,
-    url: "/api/filter",
-    query: {
-      ...req.query,
-      type: "category",
-      value: "Ordinary_Drink",
-    },
-  };
-  app.handle(newReq, res);
+  req.query.type = "category";
+  req.query.value = "Ordinary_Drink";
+  await app.handle(req, res);
 });
 
+/**
+ * GET /api/filter/cocktail
+ * Shorthand endpoint for cocktails
+ */
 app.get("/api/filter/cocktail", async (req, res) => {
-  try {
-    const { index = 0, limit = 10 } = req.query;
-    const filterUrl = `${COCKTAIL_DB_BASE_URL}/filter.php?c=Cocktail`;
-
-    const response = await fetch(filterUrl);
-    const data = await response.json();
-
-    if (!data.drinks) {
-      return res.json({
-        drinks: [],
-        totalCount: 0,
-        pagination: {
-          currentPage: 0,
-          totalPages: 0,
-          pageSize: parseInt(limit),
-          startIndex: parseInt(index),
-          endIndex: parseInt(index),
-          hasMore: false,
-        },
-      });
-    }
-
-    const startIdx = parseInt(index);
-    const endIdx = startIdx + parseInt(limit);
-    const paginatedDrinks = data.drinks
-      .slice(startIdx, endIdx)
-      .map((drink) => ({
-        id: parseInt(drink.idDrink),
-        name: drink.strDrink,
-        image: drink.strDrinkThumb,
-        category: "Cocktail",
-      }));
-
-    res.json({
-      drinks: paginatedDrinks,
-      totalCount: data.drinks.length,
-      pagination: {
-        currentPage: Math.floor(startIdx / parseInt(limit)),
-        totalPages: Math.ceil(data.drinks.length / parseInt(limit)),
-        pageSize: parseInt(limit),
-        startIndex: startIdx,
-        endIndex: endIdx,
-        hasMore: endIdx < data.drinks.length,
-      },
-    });
-  } catch (error) {
-    console.error("Error filtering drinks:", error);
-    res.status(500).json({ error: "Failed to filter drinks" });
-  }
+  req.query.type = "category";
+  req.query.value = "Cocktail";
+  await app.handle(req, res);
 });
 
-// Add a root route
-app.get("/", (req, res) => {
-  res.json({ message: "BarCraft API Server" });
-});
-
-// Error handling middleware
-app.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
-});
+// ... (other endpoints)
 
 // Start the server
 app.listen(port, () => {

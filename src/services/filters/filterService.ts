@@ -9,7 +9,7 @@ import { FilteredResponse } from "../types";
 const API_BASE_URL = "http://localhost:4000/api";
 
 export const FILTER_CATEGORIES = [
-  { label: "All Drinks", endpoint: "search" },
+  { label: "All Drinks", endpoint: null },
   { label: "Alcoholic", endpoint: "filter/alcoholic" },
   { label: "Non-Alcoholic", endpoint: "filter/non-alcoholic" },
   { label: "Ordinary Drinks", endpoint: "filter/ordinary-drink" },
@@ -21,8 +21,12 @@ export const fetchFilteredCocktails = async (
   index: number = 0,
   limit: number = 10
 ): Promise<FilteredResponse> => {
-  const finalEndpoint = endpoint || "search";
+  if (!endpoint) {
+    return fetchFromApi<FilteredResponse>(
+      `${API_BASE_URL}/search?index=${index}&limit=${limit}`
+    );
+  }
   return fetchFromApi<FilteredResponse>(
-    `${API_BASE_URL}/${finalEndpoint}?index=${index}&limit=${limit}`
+    `${API_BASE_URL}/${endpoint}?index=${index}&limit=${limit}`
   );
 };
