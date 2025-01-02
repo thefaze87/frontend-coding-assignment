@@ -2,27 +2,6 @@
   "name": "cocktail-search",
   "version": "1.0.0",
   "description": "A modern cocktail search application with detailed recipes and filtering",
-  /**
-   * Project Configuration
-   * 
-   * Architecture:
-   * - React frontend with TypeScript
-   * - Express backend proxy
-   * - Jest testing framework
-   * - SCSS/Tailwind styling
-   * 
-   * Key Dependencies:
-   * - React for UI components
-   * - React Router for navigation
-   * - TypeScript for type safety
-   * - Jest/Testing Library for testing
-   * - Express for API proxy
-   * 
-   * Development Tools:
-   * - ESLint for code quality
-   * - Prettier for formatting
-   * - Husky for git hooks
-   */
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
