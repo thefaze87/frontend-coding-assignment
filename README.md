@@ -99,7 +99,7 @@ This is just an exercise. While the methods and approaches you take to problems 
 
 # Cocktail Search Application - Details
 
-### Mark Fasel
+### by Mark Fasel
 
 ## Overview
 
@@ -132,25 +132,25 @@ A React-based cocktail search application that allows users to discover and expl
 
 ### Installation
 
-bash
+`bash`
 
 ### Clone the repository
 
-git clone [repository-url]
+`git clone [repository-url]`
 
 ### Install dependencies
 
-npm install
+`npm install`
 
 ### Start the development server
 
-npm start
+`npm start`
 
 ### Start the API server (in a separate terminal)
 
-cd server
-npm install
-npm start
+`cd server`
+`npm install`
+`npm start`
 
 ## API Integration
 
