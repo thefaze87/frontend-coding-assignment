@@ -99,28 +99,20 @@ export const fetchCocktails = async (
 
   const url = buildUrl(`${API_BASE_URL}/search`, params);
   const response = await fetchFromApi<CocktailResponse>(url);
-
-  if (response.drinks?.length > 0 && !response.drinks[0].strInstructions) {
-    return response.drinks.map((drink) => ({
-      id: parseInt(drink.idDrink),
-      name: drink.strDrink,
-      category:
-        query.toLowerCase() === "alcoholic"
-          ? "Alcoholic"
-          : query.toLowerCase() === "non alcoholic"
-            ? "Non Alcoholic"
-            : query.toLowerCase() === "ordinary drink"
-              ? "Ordinary Drink"
-              : query.toLowerCase() === "cocktail"
-                ? "Cocktail"
-                : "Unknown",
-      image: drink.strDrinkThumb,
-      ingredients: [],
-      measures: [],
-    }));
-  }
-
-  return response.drinks;
+  return response.drinks.map((drink) => ({
+    id: parseInt(drink.idDrink),
+    name: drink.strDrink,
+    category: drink.strCategory,
+    image: drink.strDrinkThumb,
+    instructions: drink.strInstructions || "",
+    ingredients: extractIngredients(drink) || [],
+    measures: extractMeasures(drink) || [],
+    tags: undefined,
+    video: undefined,
+    iba: undefined,
+    alcoholic: undefined,
+    glass: undefined,
+  }));
 };
 
 export const fetchCocktailsByLetter = async (

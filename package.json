@@ -8,7 +8,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node server/index.js",
-    "dev": "concurrently \"npm run server\" \"npm start\""
+    "dev": "concurrently \"npm run server\" \"npm start\"",
+    "lint": "eslint src/**/*.{js,jsx,ts,tsx}",
+    "type-check": "tsc --noEmit"
   },
   "eslintConfig": {
     "extends": [

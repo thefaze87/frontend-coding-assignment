@@ -49,17 +49,8 @@ export interface Cocktail {
  * Includes pagination metadata for list responses
  */
 export interface CocktailResponse {
-  drinks: Cocktail[]; // Array of cocktails matching the query
-  totalCount: number; // Total number of results available
-  pagination?: {
-    // Optional pagination metadata
-    currentPage: number; // Current page number (0-based)
-    totalPages: number; // Total number of pages available
-    pageSize: number; // Number of items per page
-    startIndex: number; // Starting index of current page
-    endIndex: number; // Ending index of current page
-    hasMore: boolean; // Whether more results are available
-  };
+  drinks: RawCocktailResponse[];
+  totalCount: number;
 }
 
 /**
@@ -120,4 +111,13 @@ export interface FilteredCocktailResponse {
     endIndex: number;
     hasMore: boolean;
   };
+}
+
+export interface RawCocktailResponse {
+  idDrink: string;
+  strDrink: string;
+  strCategory: string;
+  strDrinkThumb: string;
+  strInstructions: string;
+  // ... other raw properties from API
 }
