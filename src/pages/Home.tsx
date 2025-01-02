@@ -114,7 +114,7 @@ const Home = () => {
       <Header displayValue={displayValue} onSearch={handleSearch} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
         <h2 className="mb-4">
-          {isDefaultView ? "All Drinks" : "Search Results"}
+          {isDefaultView ? "All Drinks" : `Search Results: ${query}`}
         </h2>
 
         {/* Content Container with fixed height */}

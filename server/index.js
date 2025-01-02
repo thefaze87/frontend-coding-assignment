@@ -282,6 +282,90 @@ app.get("/api/filter/cocktails", async (req, res) => {
   }
 });
 
+/**
+ * GET /api/filter
+ * Filter cocktails by category or alcoholic content
+ * Supports:
+ * - category: Ordinary_Drink, Cocktail
+ * - alcoholic: Alcoholic, Non_Alcoholic
+ */
+app.get("/api/filter", async (req, res) => {
+  try {
+    const { type, value, index = 0, limit = 10 } = req.query;
+    let filterUrl;
+
+    // Build the appropriate filter URL based on filter type
+    if (type === "category") {
+      filterUrl = `${COCKTAIL_DB_BASE_URL}/filter.php?c=${encodeURIComponent(value)}`;
+    } else if (type === "alcoholic") {
+      filterUrl = `${COCKTAIL_DB_BASE_URL}/filter.php?a=${encodeURIComponent(value)}`;
+    } else {
+      return res.status(400).json({
+        error: "Invalid filter type",
+        message: "Filter type must be either 'category' or 'alcoholic'",
+      });
+    }
+
+    console.log("Filtering drinks:", { type, value, url: filterUrl });
+    const response = await fetch(filterUrl);
+    const data = await response.json();
+
+    if (!data.drinks) {
+      return res.json({
+        drinks: [],
+        totalCount: 0,
+        pagination: {
+          currentPage: 0,
+          totalPages: 0,
+          pageSize: parseInt(limit),
+          startIndex: parseInt(index),
+          endIndex: parseInt(index),
+          hasMore: false,
+        },
+      });
+    }
+
+    // Format and paginate results
+    const startIdx = parseInt(index);
+    const endIdx = startIdx + parseInt(limit);
+    const paginatedDrinks = data.drinks
+      .slice(startIdx, endIdx)
+      .map((drink) => ({
+        id: parseInt(drink.idDrink),
+        name: drink.strDrink,
+        image: drink.strDrinkThumb,
+        category: type === "category" ? value : "",
+        alcoholic: type === "alcoholic" ? value : "",
+        instructions: "",
+        ingredients: [],
+        measures: [],
+        glass: "",
+        iba: null,
+        video: null,
+        tags: "",
+      }));
+
+    res.json({
+      drinks: paginatedDrinks,
+      totalCount: data.drinks.length,
+      pagination: {
+        currentPage: Math.floor(startIdx / parseInt(limit)),
+        totalPages: Math.ceil(data.drinks.length / parseInt(limit)),
+        pageSize: parseInt(limit),
+        startIndex: startIdx,
+        endIndex: endIdx,
+        hasMore: endIdx < data.drinks.length,
+      },
+    });
+  } catch (error) {
+    console.error("Error filtering drinks:", error);
+    res.status(500).json({
+      error: "Failed to filter drinks",
+      message: error.message,
+    });
+  }
+});
+
 // ... (other endpoints)
 
 // Start the server
