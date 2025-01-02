@@ -9,10 +9,6 @@ import prevIcon from "../assets/icons/Prev-Icon.svg";
  * @property hasMore - Whether there are more items to load
  * @property onNext - Handler for next page click
  * @property onPrevious - Handler for previous page click
- * @property currentPage - Current page number
- * @property totalPages - Total number of pages
- * @property isFirstPage - Whether the current page is the first page
- * @property isLastPage - Whether the current page is the last page
  */
 interface PaginationProps {
   index: number;
@@ -20,10 +16,6 @@ interface PaginationProps {
   hasMore: boolean;
   onNext: () => void;
   onPrevious: () => void;
-  currentPage: number;
-  totalPages: number;
-  isFirstPage: boolean;
-  isLastPage: boolean;
 }
 
 /**

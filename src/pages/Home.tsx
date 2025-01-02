@@ -15,20 +15,12 @@ import {
 } from "../services/filters/filterService";
 
 /**
- * Home Component
- *
- * Main landing page featuring:
- * - Cocktail search and display
- * - Category filtering
- * - Pagination with boundary handling
- * - Loading states
- * - URL-based search persistence
- *
- * Design Pattern: Container component with URL state
- * Performance: Optimized re-renders and loading states
- *
- * @maintainer Mark Fasel
- * @lastUpdated 2025-01-02
+ * Home component serves as the main page of the application
+ * Features:
+ * - Displays searchable list of cocktails
+ * - Handles pagination
+ * - Maintains search state in URL
+ * - Shows cocktails in a grid layout
  */
 const Home = () => {
   // Get search parameters from URL
@@ -44,10 +36,6 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [isDefaultView, setIsDefaultView] = useState(true);
-  const [totalCount, setTotalCount] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [activeFilter, setActiveFilter] = useState<string | null>(null);
-  const [filterLabel, setFilterLabel] = useState<string>("All Drinks");
 
   /**
    * Handles search input changes
@@ -91,20 +79,26 @@ const Home = () => {
     const getCocktails = async () => {
       try {
         setLoading(true);
-        setCocktails([]); // Clear existing results while loading
-
-        const results = await fetchFilteredCocktails(
-          activeFilter,
-          index,
-          limit
-        );
-
-        console.log("Fetched results:", results); // Debug log
-
-        if (results.drinks) {
-          setCocktails(results.drinks);
-          setTotalCount(results.totalCount);
-          setHasMore(results.pagination?.hasMore || false);
+        let results;
+        if (isDefaultView) {
+          results = await fetchCocktailsByCategory(index, limit);
+          const mappedResults = results.map((drink) => ({
+            ...drink,
+            category: "Cocktail",
+            popular: false,
+            instructions: undefined,
+            ingredients: undefined,
+            measures: undefined,
+            tags: null,
+            video: null,
+            iba: null,
+            alcoholic: undefined,
+            glass: undefined,
+          }));
+          setCocktails(mappedResults);
+        } else if (query) {
+          results = await fetchCocktails(query, index, limit);
+          setCocktails(results);
         }
       } catch (error) {
         console.error("Failed to fetch cocktails", error);
@@ -115,34 +109,10 @@ const Home = () => {
       }
     };
 
-    getCocktails();
-  }, [activeFilter, index, limit]); // Ensure activeFilter is in dependencies
-
-  // Calculate pagination state
-  const currentPage = Math.floor(index / limit) + 1;
-  const totalPages = Math.ceil(totalCount / limit);
-  const showPagination = cocktails.length > 0 && totalCount > limit;
-
-  /**
-   * Handles filter changes
-   * Updates results and display text
-   */
-  const handleFilterChange = (endpoint: string | null) => {
-    setActiveFilter(endpoint);
-    setIndex(0); // Reset pagination
-    setIsDefaultView(false);
-
-    // Update display text based on selected filter
-    const selectedFilter = FILTER_CATEGORIES.find(
-      (f) => f.endpoint === endpoint
-    );
-    setFilterLabel(selectedFilter?.label || "All Drinks");
-
-    // Clear search when switching filters
-    setDisplayValue("");
-    setQuery("");
-    setSearchParams({});
-  };
+    if (isDefaultView || query) {
+      getCocktails();
+    }
+  }, [query, index, limit, isDefaultView]); // Add isDefaultView to dependencies
 
   return (
     <>
@@ -155,6 +125,7 @@ const Home = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
         <h2 className="mb-4">{isDefaultView ? "All Drinks" : filterLabel}</h2>
 
+        {/* Content Container with fixed height */}
         <div className="min-h-[600px]">
           {isSearching || loading ? (
             <div className="absolute inset-0 flex justify-center items-center">
@@ -167,6 +138,7 @@ const Home = () => {
           ) : (
             <>
               {cocktails.length > 0 ? (
+                /* Cocktail Grid */
                 <div className="grid grid-cols-2 gap-6">
                   {cocktails.map((cocktail) => (
                     <CocktailCard
@@ -177,23 +149,21 @@ const Home = () => {
                   ))}
                 </div>
               ) : (
+                /* No Results Message */
                 <div className="flex flex-col items-center justify-center min-h-[400px] text-white/80">
                   <p className="text-xl mb-2">No drinks found</p>
                   <p>Try searching for something else</p>
                 </div>
               )}
 
-              {showPagination && (
+              {/* Pagination Controls */}
+              {cocktails.length > 0 && (
                 <Pagination
                   index={index}
                   limit={limit}
-                  hasMore={hasMore}
+                  hasMore={cocktails.length >= limit}
                   onNext={() => setIndex(index + limit)}
                   onPrevious={() => setIndex(Math.max(0, index - limit))}
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  isFirstPage={index === 0}
-                  isLastPage={!hasMore}
                 />
               )}
             </>

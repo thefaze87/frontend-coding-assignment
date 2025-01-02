@@ -7,7 +7,6 @@ import {
   Cocktail,
   FilteredCocktail,
   FilteredCocktailResponse,
-  FilteredResponse,
 } from "../types";
 
 const API_BASE_URL = "http://localhost:4000/api";
@@ -48,9 +47,17 @@ export const fetchCocktails = async (
   query: string = "",
   index: number = 0,
   limit: number = 10
-): Promise<CocktailResponse> => {
-  const url = `${API_BASE_URL}/search?query=${encodeURIComponent(query)}&index=${index}&limit=${limit}`;
-  return await fetchFromApi<CocktailResponse>(url);
+) => {
+  const params: SearchParams = {
+    ...(query && { query }),
+    index,
+    limit,
+  };
+
+  const url = buildUrl(`${API_BASE_URL}/search`, params);
+  console.log("Fetching from URL:", url); // Debug log
+  const response = await fetchFromApi<CocktailResponse>(url);
+  return response.drinks;
 };
 
 export const fetchCocktailsByLetter = async (
@@ -147,7 +154,13 @@ const mapCocktailDetails = (data: any): Cocktail => ({
 export const fetchCocktailsByCategory = async (
   index: number = 0,
   limit: number = 10
-): Promise<FilteredResponse> => {
-  const url = `${API_BASE_URL}/filter/cocktails?index=${index}&limit=${limit}`;
-  return await fetchFromApi<FilteredResponse>(url);
+): Promise<FilteredCocktail[]> => {
+  const params: SearchParams = {
+    index,
+    limit,
+  };
+
+  const url = buildUrl(`${API_BASE_URL}/filter/cocktails`, params);
+  const response = await fetchFromApi<FilteredCocktailResponse>(url);
+  return response.drinks;
 };
