@@ -8,6 +8,8 @@ import {
 import { Cocktail } from "../services/types";
 import { fetchCocktailById } from "../services/cocktails/cocktailService";
 import loaderIcon from "../assets/icons/spinner.svg";
+import copyIcon from "../assets/icons/Copy-Icon.svg";
+import checkIcon from "../assets/icons/Check-Icon.svg";
 import Header from "../components/Header";
 
 /**
@@ -124,7 +126,7 @@ const CocktailDetails = () => {
 
   // Render cocktail details
   return (
-    <>
+    <div className="cocktail-details">
       <Header displayValue={displayValue} onSearch={handleSearch} />
       <div className="w-630 mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Navigation back to search. Wasn't in the design doc, but I added it to help with navigation and user experience. */}
@@ -173,9 +175,6 @@ const CocktailDetails = () => {
             {cocktail.alcoholic && (
               <span className="cocktail-tag">{cocktail.alcoholic}</span>
             )}
-            {cocktail.glass && (
-              <span className="cocktail-tag">{cocktail.glass}</span>
-            )}
             {cocktail.iba && (
               <span className="cocktail-tag">IBA: {cocktail.iba}</span>
             )}
@@ -184,18 +183,43 @@ const CocktailDetails = () => {
             )}
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-6">
             {/* Instructions section */}
             {cocktail.instructions && (
-              <div className="mb-8">
+              <div>
                 <h2 className="cocktail-sub-heading">Instructions</h2>
                 <p className="text-white/80">{cocktail.instructions}</p>
               </div>
             )}
+
+            {cocktail.glass && (
+              <div>
+                <h2 className="cocktail-sub-heading">Glass Needed</h2>
+                <p className="text-white">{cocktail.glass}</p>
+              </div>
+            )}
+
+            {/* Share Link */}
+            <div className="share-link">
+              <h2 className="cocktail-sub-heading">Share Link</h2>
+              <div className="flex justify-between">
+                <input
+                  type="text"
+                  value={`https://www.thecocktaildb.com/drink/${cocktail.id}`}
+                  className="grow"
+                />
+                <a href="#" className="copy-link flex items-center gap-2 fit">
+                  <span className="copy-icon">
+                    <img src={copyIcon} alt="Copy" />
+                  </span>
+                  <span className="copy-icon-text">Copy</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
