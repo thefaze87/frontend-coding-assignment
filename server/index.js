@@ -1,3 +1,19 @@
+/**
+ * Express Server Configuration
+ *
+ * Architecture Overview:
+ * - Acts as a proxy to CocktailDB API
+ * - Provides normalized endpoints for frontend
+ * - Handles data transformation and error cases
+ * - Implements proper CORS and security measures
+ *
+ * Key Features:
+ * - Search endpoint with pagination
+ * - Filter endpoints for categories
+ * - Detailed cocktail information
+ * - Error handling and logging
+ */
+
 import express from "express";
 import cors from "cors";
 import fetch from "node-fetch";
@@ -146,16 +162,42 @@ app.get("/api/cocktail/:id", async (req, res) => {
 });
 
 /**
- * GET /api/search
- * Search cocktails by name
+ * Search Endpoint
+ *
+ * Design Considerations:
+ * - Supports both search and filter operations
+ * - Implements pagination for large result sets
+ * - Normalizes response format
+ * - Handles edge cases (empty results, invalid params)
+ *
+ * @route GET /api/search
+ * @param {string} query - Search term or filter category
+ * @param {number} index - Pagination start index
+ * @param {number} limit - Items per page
  */
 app.get("/api/search", async (req, res) => {
   try {
     const { query = "", index = 0, limit = 10 } = req.query;
     console.log("Search params:", { query, index, limit });
-    const searchUrl = query
-      ? `${COCKTAIL_DB_BASE_URL}/search.php?s=${encodeURIComponent(query)}`
-      : `${COCKTAIL_DB_BASE_URL}/filter.php?c=Cocktail`;
+
+    // Handle special filter cases
+    const filterTerms = {
+      alcoholic: "filter.php?a=Alcoholic",
+      "non alcoholic": "filter.php?a=Non_Alcoholic",
+      "ordinary drink": "filter.php?c=Ordinary_Drink",
+      cocktail: "filter.php?c=Cocktail",
+    };
+
+    const searchTerm = query.toLowerCase();
+    const filterUrl = filterTerms[searchTerm];
+
+    // Use appropriate endpoint based on search term
+    const searchUrl = filterUrl
+      ? `${COCKTAIL_DB_BASE_URL}/${filterUrl}`
+      : query
+        ? `${COCKTAIL_DB_BASE_URL}/search.php?s=${encodeURIComponent(query)}`
+        : `${COCKTAIL_DB_BASE_URL}/filter.php?c=Cocktail`;
+
     console.log("Searching CocktailDB:", searchUrl);
 
     const response = await fetch(searchUrl);

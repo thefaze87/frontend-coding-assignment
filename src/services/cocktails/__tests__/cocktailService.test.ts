@@ -2,7 +2,7 @@ import {
   fetchCocktails,
   fetchCocktailsByLetter,
   fetchPopularCocktails,
-  fetchAlcoholicCocktails,
+  fetchCocktailsByCategory,
 } from "../cocktailService";
 import { fetchFromApi, buildUrl } from "../../api/apiService";
 import { CocktailResponse } from "../types";
@@ -19,12 +19,11 @@ import { CocktailResponse } from "../types";
 jest.mock("../../api/apiService", () => ({
   fetchFromApi: jest.fn(),
   buildUrl: jest.fn((baseUrl, params) => {
-    // Simulate URL building for testing
+    // Return a proper URL for testing
     const parts = [];
     if (params.query) parts.push(`query=${params.query}`);
     if (params.index !== undefined) parts.push(`index=${params.index}`);
     if (params.limit !== undefined) parts.push(`limit=${params.limit}`);
-    if (params.firstLetter) parts.push(`firstLetter=${params.firstLetter}`);
     return parts.length ? `${baseUrl}?${parts.join("&")}` : baseUrl;
   }),
 }));
@@ -37,14 +36,19 @@ describe("cocktailService", () => {
   const mockResponse: CocktailResponse = {
     drinks: [
       {
-        id: 11007,
-        name: "Margarita",
-        category: "Ordinary Drink",
-        image:
+        idDrink: "11007",
+        strDrink: "Margarita",
+        strDrinkThumb:
           "https://www.thecocktaildb.com/images/media/drink/5noda61589575158.jpg",
-        instructions: "Rub the rim of the glass with the lime slice...",
-        ingredients: ["Tequila", "Triple sec", "Lime juice", "Salt"],
-        measures: ["1 1/2 oz", "1/2 oz", "1 oz", null],
+        strInstructions: "Rub the rim of the glass with the lime slice...",
+        strIngredient1: "Tequila",
+        strIngredient2: "Triple sec",
+        strIngredient3: "Lime juice",
+        strIngredient4: "Salt",
+        strMeasure1: "1 1/2 oz",
+        strMeasure2: "1/2 oz",
+        strMeasure3: "1 oz",
+        strMeasure4: null,
       },
     ],
     totalCount: 1,
@@ -102,6 +106,58 @@ describe("cocktailService", () => {
         }
       );
       expect(result).toEqual(mockResponse.drinks);
+    });
+
+    it("should handle alcoholic filter search", async () => {
+      const mockResponse = {
+        drinks: [
+          {
+            idDrink: "11007",
+            strDrink: "Margarita",
+            strDrinkThumb: "https://example.com/margarita.jpg",
+          },
+        ],
+      };
+
+      (fetchFromApi as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await fetchCocktails("alcoholic");
+      expect(result).toEqual([
+        {
+          id: 11007,
+          name: "Margarita",
+          category: "Alcoholic",
+          image: "https://example.com/margarita.jpg",
+          ingredients: [],
+          measures: [],
+        },
+      ]);
+    });
+
+    it("should handle non alcoholic filter search", async () => {
+      const mockResponse = {
+        drinks: [
+          {
+            idDrink: "12345",
+            strDrink: "Virgin Mojito",
+            strDrinkThumb: "https://example.com/virgin.jpg",
+          },
+        ],
+      };
+
+      (fetchFromApi as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await fetchCocktails("non alcoholic");
+      expect(result).toEqual([
+        {
+          id: 12345,
+          name: "Virgin Mojito",
+          category: "Non Alcoholic",
+          image: "https://example.com/virgin.jpg",
+          ingredients: [],
+          measures: [],
+        },
+      ]);
     });
   });
 
@@ -163,44 +219,68 @@ describe("cocktailService", () => {
     });
   });
 
-  describe("fetchAlcoholicCocktails", () => {
-    it("should fetch alcoholic cocktails with pagination", async () => {
-      const mockResponse = {
-        drinks: [
-          {
-            id: 11007,
-            name: "Margarita",
-            image: "https://example.com/margarita.jpg",
-          },
-        ],
-        totalCount: 1,
-        pagination: {
-          currentPage: 0,
-          totalPages: 1,
-          pageSize: 10,
-          startIndex: 0,
-          endIndex: 1,
-          hasMore: false,
+  describe("fetchCocktailsByCategory", () => {
+    // Setup specific mock response for category filtering
+    const categoryMockResponse = {
+      drinks: [
+        {
+          id: 11007,
+          name: "Margarita",
+          image: "https://example.com/margarita.jpg",
         },
-      };
+      ],
+      totalCount: 1,
+      pagination: {
+        currentPage: 0,
+        totalPages: 1,
+        pageSize: 10,
+        startIndex: 0,
+        endIndex: 1,
+        hasMore: false,
+      },
+    };
 
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockResponse),
-      });
+    beforeEach(() => {
+      // Override the default mock for these specific tests
+      (fetchFromApi as jest.Mock).mockResolvedValue(categoryMockResponse);
+    });
 
-      const result = await fetchAlcoholicCocktails();
-      expect(result).toEqual(mockResponse.drinks);
+    it("should fetch cocktails by category with pagination", async () => {
+      const result = await fetchCocktailsByCategory();
+      expect(result).toEqual(categoryMockResponse.drinks);
+      expect(buildUrl).toHaveBeenCalledWith(
+        "http://localhost:4000/api/filter/cocktails",
+        {
+          index: 0,
+          limit: 10,
+        }
+      );
     });
 
     it("should handle empty response", async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ drinks: [] }),
-      });
+      const emptyResponse = {
+        drinks: [],
+        totalCount: 0,
+        pagination: {
+          currentPage: 0,
+          totalPages: 0,
+          pageSize: 10,
+          startIndex: 0,
+          endIndex: 0,
+          hasMore: false,
+        },
+      };
+      (fetchFromApi as jest.Mock).mockResolvedValue(emptyResponse);
 
-      const result = await fetchAlcoholicCocktails();
+      const result = await fetchCocktailsByCategory();
       expect(result).toEqual([]);
+      expect(buildUrl).toHaveBeenCalledWith(
+        "http://localhost:4000/api/filter/cocktails",
+        {
+          index: 0,
+          limit: 10,
+        }
+      );
     });
   });
 });

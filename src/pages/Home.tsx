@@ -42,14 +42,21 @@ const Home = () => {
     setIsSearching(true);
     setCocktails([]); // Clear existing data when search starts
     const searchTerm = value.trim();
-    setDisplayValue(searchTerm); // Only show what user typed
-    setQuery(searchTerm);
-    setIsDefaultView(!searchTerm); // Set to default view if search is empty
+
+    // Normalize search terms for filter cases
+    const normalizedTerm = searchTerm.toLowerCase();
+    const isFilterTerm = [
+      "alcoholic",
+      "non alcoholic",
+      "ordinary drink",
+      "cocktail",
+    ].includes(normalizedTerm);
+
+    setDisplayValue(searchTerm);
+    setQuery(isFilterTerm ? normalizedTerm : searchTerm);
+    setIsDefaultView(!searchTerm);
     setIndex(0);
-    setSearchParams(
-      searchTerm ? { q: searchTerm } : {}, // Only set URL param if there's a search
-      { replace: true }
-    );
+    setSearchParams(searchTerm ? { q: searchTerm } : {}, { replace: true });
   };
 
   /**
@@ -82,12 +89,12 @@ const Home = () => {
             ...drink,
             category: "Cocktail",
             popular: false,
-            instructions: undefined,
-            ingredients: undefined,
-            measures: undefined,
-            tags: null,
-            video: null,
-            iba: null,
+            instructions: "",
+            ingredients: [],
+            measures: [],
+            tags: undefined,
+            video: undefined,
+            iba: undefined,
             alcoholic: undefined,
             glass: undefined,
           }));
@@ -129,24 +136,16 @@ const Home = () => {
             </div>
           ) : (
             <>
-              {cocktails.length > 0 ? (
-                /* Cocktail Grid */
-                <div className="grid grid-cols-2 gap-6">
-                  {cocktails.map((cocktail) => (
-                    <CocktailCard
-                      key={cocktail.id}
-                      cocktail={cocktail}
-                      loading={false}
-                    />
-                  ))}
-                </div>
-              ) : (
-                /* No Results Message */
-                <div className="flex flex-col items-center justify-center min-h-[400px] text-white/80">
-                  <p className="text-xl mb-2">No drinks found</p>
-                  <p>Try searching for something else</p>
-                </div>
-              )}
+              {/* Cocktail Grid */}
+              <div className="grid grid-cols-2 gap-6">
+                {cocktails.map((cocktail) => (
+                  <CocktailCard
+                    key={cocktail.id}
+                    cocktail={cocktail}
+                    loading={false}
+                  />
+                ))}
+              </div>
 
               {/* Pagination Controls */}
               {cocktails.length > 0 && (

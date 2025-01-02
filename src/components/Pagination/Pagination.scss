@@ -1,0 +1,69 @@
+/**
+ * Pagination Styles
+ * 
+ * Purpose:
+ * - Define navigation controls
+ * - Handle button states
+ * - Manage transitions
+ * - Support accessibility
+ * 
+ * Design System:
+ * - Button dimensions
+ * - State colors
+ * - Spacing units
+ * - Interactive states
+ * 
+ * Accessibility:
+ * - Focus indicators
+ * - Touch targets
+ * - Color contrast
+ * - State visibility
+ * 
+ * Responsive Design:
+ * - Mobile-first layout
+ * - Touch-friendly targets
+ * - Flexible spacing
+ * - Viewport adaptation
+ */
+
+.pagination {
+  /* Container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+
+  /* Navigation Buttons */
+  button {
+    background: rgba(55, 55, 55, 0.5);
+    border: 1px solid rgba(241, 241, 241, 0.6);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    color: white;
+    transition: all 0.3s ease;
+
+    /* States */
+    &:hover:not(:disabled) {
+      background: #0b873d;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Focus State */
+    &:focus {
+      outline: 2px solid #0b873d;
+      outline-offset: 2px;
+    }
+  }
+
+  /* Page Information */
+  .page-info {
+    color: rgba(255, 255, 255, 0.8);
+    font-family: "Varela Round", serif;
+    font-size: 0.875rem;
+  }
+}

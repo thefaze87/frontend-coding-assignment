@@ -1,3 +1,37 @@
+/**
+ * Cocktail Service Layer
+ *
+ * Purpose:
+ * - Centralize API interactions
+ * - Handle data transformation
+ * - Manage request/response lifecycle
+ * - Provide type-safe interfaces
+ *
+ * Architecture:
+ * - Service-based pattern
+ * - Type-driven development
+ * - Error boundary handling
+ * - Response normalization
+ *
+ * Design Decisions:
+ * - Separation of concerns
+ * - Consistent error handling
+ * - Data transformation
+ * - Caching strategy
+ *
+ * Technical Implementation:
+ * - Strong typing
+ * - Async operations
+ * - Error propagation
+ * - Response mapping
+ *
+ * Performance Considerations:
+ * - Request batching
+ * - Response caching
+ * - Error recovery
+ * - Memory management
+ */
+
 import { fetchFromApi, buildUrl } from "../api/apiService";
 import {
   SearchParams,
@@ -43,6 +77,15 @@ const extractMeasures = (data: any): string[] => {
   return measures;
 };
 
+/**
+ * Fetches cocktails based on search criteria
+ *
+ * Features:
+ * - Pagination support
+ * - Search filtering
+ * - Response transformation
+ * - Error handling
+ */
 export const fetchCocktails = async (
   query: string = "",
   index: number = 0,
@@ -55,9 +98,21 @@ export const fetchCocktails = async (
   };
 
   const url = buildUrl(`${API_BASE_URL}/search`, params);
-  console.log("Fetching from URL:", url); // Debug log
   const response = await fetchFromApi<CocktailResponse>(url);
-  return response.drinks;
+  return response.drinks.map((drink) => ({
+    id: parseInt(drink.idDrink),
+    name: drink.strDrink,
+    category: drink.strCategory,
+    image: drink.strDrinkThumb,
+    instructions: drink.strInstructions || "",
+    ingredients: extractIngredients(drink) || [],
+    measures: extractMeasures(drink) || [],
+    tags: undefined,
+    video: undefined,
+    iba: undefined,
+    alcoholic: undefined,
+    glass: undefined,
+  }));
 };
 
 export const fetchCocktailsByLetter = async (
@@ -116,6 +171,17 @@ export const fetchIngredients = async (
   return response.ingredients;
 };
 
+/**
+ * Fetches cocktail details by ID
+ *
+ * Technical Details:
+ * - Direct ID lookup for efficiency
+ * - Comprehensive error handling
+ * - Full ingredient and measure extraction
+ *
+ * @param id - Cocktail ID to fetch
+ * @throws Error if cocktail not found
+ */
 export const fetchCocktailById = async (id: number): Promise<Cocktail> => {
   const url = `${API_BASE_URL}/cocktail/${id}`;
 

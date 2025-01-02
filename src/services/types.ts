@@ -1,23 +1,45 @@
 /**
- * Core interfaces for the cocktail search application
+ * Type Definitions
+ *
+ * Purpose:
+ * - Define core data structures
+ * - Ensure type safety across application
+ * - Document data relationships
+ * - Provide interface consistency
+ *
+ * Design Decisions:
+ * - Separate response and domain types
+ * - Strict null handling
+ * - Optional field management
+ * - Clear type hierarchies
  */
 
 /**
- * Represents a single cocktail with all its details
- * Maps to TheCocktailDB's drink structure with our custom formatting
+ * Search Parameters
+ * Used for API requests that support pagination and filtering
+ */
+export interface SearchParams {
+  query?: string;
+  index?: number;
+  limit?: number;
+  firstLetter?: string;
+}
+
+/**
+ * Cocktail Domain Model
+ * Core business object representing a cocktail
  */
 export interface Cocktail {
-  id: number; // Unique identifier for the cocktail
-  name: string; // Name of the cocktail
-  category: string; // Category (e.g., "Cocktail", "Ordinary Drink")
-  image: string; // URL to the cocktail's image
-  popular?: boolean; // Whether this is a popular/featured cocktail
-  instructions?: string; // Step-by-step mixing instructions
-  ingredients?: string[]; // Array of ingredient names
-  measures?: string[]; // Array of measurements corresponding to ingredients
-  tags?: string | null;
-  video?: string | null;
-  iba?: string | null;
+  id: number;
+  name: string;
+  category: string;
+  image: string;
+  instructions?: string;
+  ingredients: string[];
+  measures: string[];
+  tags?: string;
+  video?: string;
+  iba?: string;
   alcoholic?: string;
   glass?: string;
 }
@@ -27,28 +49,8 @@ export interface Cocktail {
  * Includes pagination metadata for list responses
  */
 export interface CocktailResponse {
-  drinks: Cocktail[]; // Array of cocktails matching the query
-  totalCount: number; // Total number of results available
-  pagination?: {
-    // Optional pagination metadata
-    currentPage: number; // Current page number (0-based)
-    totalPages: number; // Total number of pages available
-    pageSize: number; // Number of items per page
-    startIndex: number; // Starting index of current page
-    endIndex: number; // Ending index of current page
-    hasMore: boolean; // Whether more results are available
-  };
-}
-
-/**
- * Search parameters for API endpoints
- * Used to build query strings for requests
- */
-export interface SearchParams {
-  query?: string; // Text search query
-  firstLetter?: string; // First letter filter for letter-based search
-  index?: number; // Pagination start index
-  limit?: number; // Number of items to return
+  drinks: RawCocktailResponse[];
+  totalCount: number;
 }
 
 /**
@@ -109,4 +111,13 @@ export interface FilteredCocktailResponse {
     endIndex: number;
     hasMore: boolean;
   };
+}
+
+export interface RawCocktailResponse {
+  idDrink: string;
+  strDrink: string;
+  strCategory: string;
+  strDrinkThumb: string;
+  strInstructions: string;
+  // ... other raw properties from API
 }
