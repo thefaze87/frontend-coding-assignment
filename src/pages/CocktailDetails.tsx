@@ -103,9 +103,6 @@ const CocktailDetails = () => {
   const [error, setError] = useState<string | null>(null);
   const [displayValue, setDisplayValue] = useState("");
 
-  const { copied, copy } = useCopyToClipboard();
-  const shareUrl = `${window.location.origin}/cocktail/${id}`; // TODO: While this works, it's not a permanent solution. We need to find a way to get the share url from the backend. The URL is also only based on the site its serving from and there may be better solutions to handle graceful degradation esecially if the API serivce is down.
-
   // Update display value when search params change
   useEffect(() => {
     const queryParam = searchParams.get("q");
@@ -276,24 +273,17 @@ const CocktailDetails = () => {
             <div className="share-link">
               <h2 className="cocktail-sub-heading">Share Link</h2>
               <div className="flex justify-between">
-                <input type="text" value={shareUrl} readOnly className="grow" />
-                <button
-                  onClick={() => copy(shareUrl)}
-                  className={`copy-link flex items-center gap-2 fit transition-colors duration-300 ${
-                    copied ? "bg-green-600" : ""
-                  }`}
-                  aria-label={copied ? "Copied!" : "Copy to clipboard"}
-                >
+                <input
+                  type="text"
+                  value={`https://www.thecocktaildb.com/drink/${cocktail.id}`}
+                  className="grow"
+                />
+                <a href="#" className="copy-link flex items-center gap-2 fit">
                   <span className="copy-icon">
-                    <img
-                      src={copied ? checkIcon : copyIcon}
-                      alt={copied ? "Copied" : "Copy"}
-                    />
+                    <img src={copyIcon} alt="Copy" />
                   </span>
-                  <span className="copy-icon-text">
-                    {copied ? "Copied!" : "Copy"}
-                  </span>
-                </button>
+                  <span className="copy-icon-text">Copy</span>
+                </a>
               </div>
             </div>
           </div>
