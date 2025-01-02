@@ -33,6 +33,13 @@ const Header = ({ displayValue, onSearch }: HeaderProps) => {
     onSearch(inputValue);
   };
 
+  const searchSuggestions = [
+    "Alcoholic",
+    "Non Alcoholic",
+    "Ordinary Drink",
+    "Cocktail",
+  ];
+
   return (
     <header className="border-b border-white/20 w-full">
       <div className="w-full px-8 py-4 flex justify-between items-center">
@@ -42,6 +49,7 @@ const Header = ({ displayValue, onSearch }: HeaderProps) => {
         {/* Search Bar Container */}
         <form
           onSubmit={handleSubmit}
+          role="form"
           className="mx-auto flex items-center space-x-2 w-1/4 rounded-lg border border-white"
         >
           {/* Search Icon */}
@@ -71,6 +79,10 @@ const Header = ({ displayValue, onSearch }: HeaderProps) => {
 
         {/* Spacer for layout balance */}
         <div className="w-[180px]"></div>
+
+        <div className="search-suggestions mt-2 text-sm text-white/60">
+          Try: {searchSuggestions.join(", ")}
+        </div>
       </div>
     </header>
   );

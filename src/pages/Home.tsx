@@ -42,14 +42,21 @@ const Home = () => {
     setIsSearching(true);
     setCocktails([]); // Clear existing data when search starts
     const searchTerm = value.trim();
-    setDisplayValue(searchTerm); // Only show what user typed
-    setQuery(searchTerm);
-    setIsDefaultView(!searchTerm); // Set to default view if search is empty
+
+    // Normalize search terms for filter cases
+    const normalizedTerm = searchTerm.toLowerCase();
+    const isFilterTerm = [
+      "alcoholic",
+      "non alcoholic",
+      "ordinary drink",
+      "cocktail",
+    ].includes(normalizedTerm);
+
+    setDisplayValue(searchTerm);
+    setQuery(isFilterTerm ? normalizedTerm : searchTerm);
+    setIsDefaultView(!searchTerm);
     setIndex(0);
-    setSearchParams(
-      searchTerm ? { q: searchTerm } : {}, // Only set URL param if there's a search
-      { replace: true }
-    );
+    setSearchParams(searchTerm ? { q: searchTerm } : {}, { replace: true });
   };
 
   /**

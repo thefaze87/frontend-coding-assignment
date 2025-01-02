@@ -36,14 +36,19 @@ describe("cocktailService", () => {
   const mockResponse: CocktailResponse = {
     drinks: [
       {
-        id: 11007,
-        name: "Margarita",
-        category: "Ordinary Drink",
-        image:
+        idDrink: "11007",
+        strDrink: "Margarita",
+        strDrinkThumb:
           "https://www.thecocktaildb.com/images/media/drink/5noda61589575158.jpg",
-        instructions: "Rub the rim of the glass with the lime slice...",
-        ingredients: ["Tequila", "Triple sec", "Lime juice", "Salt"],
-        measures: ["1 1/2 oz", "1/2 oz", "1 oz", null],
+        strInstructions: "Rub the rim of the glass with the lime slice...",
+        strIngredient1: "Tequila",
+        strIngredient2: "Triple sec",
+        strIngredient3: "Lime juice",
+        strIngredient4: "Salt",
+        strMeasure1: "1 1/2 oz",
+        strMeasure2: "1/2 oz",
+        strMeasure3: "1 oz",
+        strMeasure4: null,
       },
     ],
     totalCount: 1,
@@ -101,6 +106,58 @@ describe("cocktailService", () => {
         }
       );
       expect(result).toEqual(mockResponse.drinks);
+    });
+
+    it("should handle alcoholic filter search", async () => {
+      const mockResponse = {
+        drinks: [
+          {
+            idDrink: "11007",
+            strDrink: "Margarita",
+            strDrinkThumb: "https://example.com/margarita.jpg",
+          },
+        ],
+      };
+
+      (fetchFromApi as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await fetchCocktails("alcoholic");
+      expect(result).toEqual([
+        {
+          id: 11007,
+          name: "Margarita",
+          category: "Alcoholic",
+          image: "https://example.com/margarita.jpg",
+          ingredients: [],
+          measures: [],
+        },
+      ]);
+    });
+
+    it("should handle non alcoholic filter search", async () => {
+      const mockResponse = {
+        drinks: [
+          {
+            idDrink: "12345",
+            strDrink: "Virgin Mojito",
+            strDrinkThumb: "https://example.com/virgin.jpg",
+          },
+        ],
+      };
+
+      (fetchFromApi as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await fetchCocktails("non alcoholic");
+      expect(result).toEqual([
+        {
+          id: 12345,
+          name: "Virgin Mojito",
+          category: "Non Alcoholic",
+          image: "https://example.com/virgin.jpg",
+          ingredients: [],
+          measures: [],
+        },
+      ]);
     });
   });
 

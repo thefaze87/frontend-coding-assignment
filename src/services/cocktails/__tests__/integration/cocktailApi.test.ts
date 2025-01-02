@@ -37,13 +37,17 @@ describe("Cocktail API Integration", () => {
   const mockResponse = {
     drinks: [
       {
-        id: 1,
-        name: "Margarita",
-        category: "Cocktail",
-        image: "margarita.jpg",
-        instructions: "Mix ingredients",
-        ingredients: ["Tequila", "Lime", "Triple Sec"],
-        measures: ["2 oz", "1 oz", "1 oz"],
+        idDrink: "11007",
+        strDrink: "Margarita",
+        strCategory: "Cocktail",
+        strDrinkThumb: "margarita.jpg",
+        strInstructions: "Mix ingredients",
+        strIngredient1: "Tequila",
+        strIngredient2: "Lime",
+        strIngredient3: "Triple Sec",
+        strMeasure1: "2 oz",
+        strMeasure2: "1 oz",
+        strMeasure3: "1 oz",
       },
     ],
     totalCount: 1,
@@ -226,5 +230,31 @@ describe("Cocktail API Integration", () => {
       );
       expect(result).toEqual(mockResponse.drinks);
     });
+  });
+
+  describe("Filter endpoints", () => {
+    it("should fetch alcoholic drinks", async () => {
+      const response = await fetchFromApi("/api/search?query=alcoholic");
+      expect(response.drinks).toBeDefined();
+      expect(Array.isArray(response.drinks)).toBe(true);
+      if (response.drinks.length > 0) {
+        expect(response.drinks[0]).toHaveProperty("idDrink");
+        expect(response.drinks[0]).toHaveProperty("strDrink");
+        expect(response.drinks[0]).toHaveProperty("strDrinkThumb");
+      }
+    });
+
+    it("should fetch non-alcoholic drinks", async () => {
+      const response = await fetchFromApi("/api/search?query=non alcoholic");
+      expect(response.drinks).toBeDefined();
+      expect(Array.isArray(response.drinks)).toBe(true);
+      if (response.drinks.length > 0) {
+        expect(response.drinks[0]).toHaveProperty("idDrink");
+        expect(response.drinks[0]).toHaveProperty("strDrink");
+        expect(response.drinks[0]).toHaveProperty("strDrinkThumb");
+      }
+    });
+
+    // Add more filter tests...
   });
 });

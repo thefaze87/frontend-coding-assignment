@@ -153,9 +153,25 @@ app.get("/api/search", async (req, res) => {
   try {
     const { query = "", index = 0, limit = 10 } = req.query;
     console.log("Search params:", { query, index, limit });
-    const searchUrl = query
-      ? `${COCKTAIL_DB_BASE_URL}/search.php?s=${encodeURIComponent(query)}`
-      : `${COCKTAIL_DB_BASE_URL}/filter.php?c=Cocktail`;
+
+    // Handle special filter cases
+    const filterTerms = {
+      alcoholic: "filter.php?a=Alcoholic",
+      "non alcoholic": "filter.php?a=Non_Alcoholic",
+      "ordinary drink": "filter.php?c=Ordinary_Drink",
+      cocktail: "filter.php?c=Cocktail",
+    };
+
+    const searchTerm = query.toLowerCase();
+    const filterUrl = filterTerms[searchTerm];
+
+    // Use appropriate endpoint based on search term
+    const searchUrl = filterUrl
+      ? `${COCKTAIL_DB_BASE_URL}/${filterUrl}`
+      : query
+        ? `${COCKTAIL_DB_BASE_URL}/search.php?s=${encodeURIComponent(query)}`
+        : `${COCKTAIL_DB_BASE_URL}/filter.php?c=Cocktail`;
+
     console.log("Searching CocktailDB:", searchUrl);
 
     const response = await fetch(searchUrl);
