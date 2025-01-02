@@ -15,8 +15,7 @@
  * - Response structure
  */
 
-import { buildUrl } from "../../../api/apiService";
-import { fetchFromApi } from "../../../api/apiService";
+import { buildUrl, fetchFromApi } from "../../../api/apiService";
 import {
   fetchCocktails,
   fetchCocktailsByLetter,
@@ -24,13 +23,21 @@ import {
   fetchPopularCocktails,
 } from "../../cocktailService";
 
-// Mock the API service functions
+// Mock the API service
 jest.mock("../../../api/apiService", () => ({
   buildUrl: jest.fn(),
   fetchFromApi: jest.fn(),
 }));
 
+/**
+ * Integration Test Suite for Cocktail API
+ * Verifies the integration between service layer and API endpoints
+ */
 describe("Cocktail API Integration", () => {
+  /**
+   * Mock cocktail data representing the standard API response
+   * Used across different test cases to ensure consistent data structure
+   */
   const mockDrink = {
     id: 1,
     name: "Margarita",
@@ -41,6 +48,10 @@ describe("Cocktail API Integration", () => {
     measures: ["2 oz", "1 oz", "1 oz"],
   };
 
+  /**
+   * Mock response for paginated endpoints
+   * Matches the API's pagination structure
+   */
   const mockPaginatedResponse = {
     drinks: [mockDrink],
     totalCount: 1,
@@ -49,6 +60,10 @@ describe("Cocktail API Integration", () => {
     },
   };
 
+  /**
+   * Mock response for array-based endpoints
+   * Used for endpoints that return simple arrays of drinks
+   */
   const mockArrayResponse = [mockDrink];
 
   beforeEach(() => {
@@ -132,7 +147,7 @@ describe("Cocktail API Integration", () => {
 
   /**
    * Popular Cocktails Tests
-   * Tests fetching of popular/featured cocktails
+   * Tests fetching popular cocktails with pagination
    */
   describe("fetchPopularCocktails", () => {
     it("should fetch popular cocktails", async () => {

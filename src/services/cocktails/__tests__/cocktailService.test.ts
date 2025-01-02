@@ -1,16 +1,22 @@
-/**
- * Cocktail Service Tests
- *
- * @maintainer Mark Fasel
- * @lastUpdated 2025-01-02
- */
 import { fetchCocktails, fetchCocktailById } from "../cocktailService";
-import { buildUrl, fetchFromApi } from "../../api/apiService";
-import { CocktailResponse } from "../../types";
+import { buildUrl } from "../../api/apiService";
+import { fetchFromApi } from "../../api/apiService";
 
-jest.mock("../../api/apiService");
+// Mock the API service
+jest.mock("../../api/apiService", () => ({
+  buildUrl: jest.fn(),
+  fetchFromApi: jest.fn(),
+}));
 
+/**
+ * Test suite for the Cocktail Service
+ * Tests the business logic layer that interfaces with the cocktail API
+ */
 describe("cocktailService", () => {
+  /**
+   * Mock cocktail data representing a standard drink response
+   * Includes all required fields for testing cocktail operations
+   */
   const mockDrink = {
     id: 11007,
     name: "Margarita",
@@ -21,6 +27,10 @@ describe("cocktailService", () => {
     measures: ["1 1/2 oz", "1/2 oz", "1 oz"],
   };
 
+  /**
+   * Mock paginated response matching the API's response structure
+   * Used for testing endpoints that return multiple cocktails
+   */
   const mockResponse = {
     drinks: [mockDrink],
     totalCount: 1,
@@ -40,26 +50,28 @@ describe("cocktailService", () => {
     (fetchFromApi as jest.Mock).mockResolvedValue(mockResponse);
   });
 
+  /**
+   * Tests for the main cocktail search functionality
+   * Verifies proper handling of search parameters and response parsing
+   */
   describe("fetchCocktails", () => {
     it("should fetch cocktails with default parameters", async () => {
       const result = await fetchCocktails();
-
       expect(fetchFromApi).toHaveBeenCalled();
-
       expect(result).toEqual(mockResponse);
     });
-
-    // Add more tests as needed
   });
 
+  /**
+   * Tests for fetching individual cocktail details
+   * Verifies proper error handling and response transformation
+   */
   describe("fetchCocktailById", () => {
     beforeEach(() => {
-      // Temporarily silence console.error for this test
       jest.spyOn(console, "error").mockImplementation(() => {});
     });
 
     afterEach(() => {
-      // Restore console.error after test
       jest.restoreAllMocks();
     });
 
@@ -68,9 +80,7 @@ describe("cocktailService", () => {
         drink: mockResponse.drinks[0],
       };
       (fetchFromApi as jest.Mock).mockResolvedValue(mockDetailResponse);
-
       const result = await fetchCocktailById(11007);
-
       expect(result).toEqual(mockDetailResponse.drink);
     });
 
@@ -82,9 +92,12 @@ describe("cocktailService", () => {
     });
   });
 
+  /**
+   * Tests for error handling across all service functions
+   * Verifies proper error propagation and logging
+   */
   describe("Error handling", () => {
     beforeEach(() => {
-      // Silence console.error for error tests
       jest.spyOn(console, "error").mockImplementation(() => {});
     });
 

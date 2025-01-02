@@ -5,15 +5,17 @@ import {
   IngredientResponse,
   CocktailDetailsResponse,
   Cocktail,
-  FilteredResponse,
+  FilteredCocktailResponse as FilteredResponse,
 } from "../types";
 
 const API_BASE_URL = "http://localhost:4000/api";
 
 /**
  * Helper function to extract ingredients from API response
- * @param data - Raw cocktail data from API
- * @returns Array of ingredient names
+ * Processes raw API data to get a clean array of ingredients
+ *
+ * @param data - Raw cocktail data from API containing strIngredient1...strIngredient15
+ * @returns Array of non-null ingredient names
  */
 const extractIngredients = (data: any): string[] => {
   const ingredients: string[] = [];
@@ -28,8 +30,10 @@ const extractIngredients = (data: any): string[] => {
 
 /**
  * Helper function to extract measurements from API response
- * @param data - Raw cocktail data from API
- * @returns Array of measurements
+ * Processes raw API data to get a clean array of measurements
+ *
+ * @param data - Raw cocktail data from API containing strMeasure1...strMeasure15
+ * @returns Array of non-null, trimmed measurements
  */
 const extractMeasures = (data: any): string[] => {
   const measures: string[] = [];
@@ -42,6 +46,15 @@ const extractMeasures = (data: any): string[] => {
   return measures;
 };
 
+/**
+ * Fetches cocktails based on search criteria with pagination
+ * Primary search endpoint for cocktail discovery
+ *
+ * @param query - Search term for cocktail names (optional)
+ * @param index - Starting position for pagination (default: 0)
+ * @param limit - Number of items per page (default: 10)
+ * @returns Promise with paginated cocktail results
+ */
 export const fetchCocktails = async (
   query: string = "",
   index: number = 0,
@@ -57,6 +70,16 @@ export const fetchCocktails = async (
   return await fetchFromApi<CocktailResponse>(url);
 };
 
+/**
+ * Fetches cocktails starting with a specific letter
+ * Used for alphabetical browsing functionality
+ *
+ * @param letter - Single character to filter cocktails by
+ * @param index - Starting position for pagination (default: 0)
+ * @param limit - Number of items per page (default: 10)
+ * @throws Error if letter parameter is not a single character
+ * @returns Promise with matching cocktails array
+ */
 export const fetchCocktailsByLetter = async (
   letter: string,
   index: number = 0,
@@ -77,6 +100,14 @@ export const fetchCocktailsByLetter = async (
   return response.drinks;
 };
 
+/**
+ * Fetches popular cocktails with pagination
+ * Returns curated list of frequently accessed cocktails
+ *
+ * @param index - Starting position for pagination (default: 0)
+ * @param limit - Number of items per page (default: 10)
+ * @returns Promise with array of popular cocktails
+ */
 export const fetchPopularCocktails = async (
   index: number = 0,
   limit: number = 10
@@ -93,9 +124,12 @@ export const fetchPopularCocktails = async (
 
 /**
  * Fetches ingredients by search query with pagination
- * @param query - Search term for ingredients
+ * Supports ingredient discovery and filtering
+ *
+ * @param query - Search term for ingredients (optional)
  * @param index - Starting position for pagination (default: 0)
  * @param limit - Number of items per page (default: 10)
+ * @returns Promise with paginated ingredient results
  */
 export const fetchIngredients = async (
   query: string = "",
@@ -113,6 +147,14 @@ export const fetchIngredients = async (
   return response.ingredients;
 };
 
+/**
+ * Fetches detailed information for a specific cocktail
+ * Includes full recipe, ingredients, and instructions
+ *
+ * @param id - Unique identifier of the cocktail
+ * @throws Error if cocktail is not found
+ * @returns Promise with complete cocktail details
+ */
 export const fetchCocktailById = async (id: number): Promise<Cocktail> => {
   const url = `${API_BASE_URL}/cocktail/${id}`;
 
@@ -128,25 +170,13 @@ export const fetchCocktailById = async (id: number): Promise<Cocktail> => {
   }
 };
 
-const mapCocktailDetails = (data: any): Cocktail => ({
-  id: data.idDrink,
-  name: data.strDrink,
-  category: data.strCategory,
-  image: data.strDrinkThumb,
-  instructions: data.strInstructions,
-  ingredients: extractIngredients(data),
-  measures: extractMeasures(data),
-  tags: data.strTags,
-  video: data.strVideo,
-  iba: data.strIBA,
-  alcoholic: data.strAlcoholic,
-  glass: data.strGlass,
-});
-
 /**
  * Fetches all drinks in the Cocktail category with pagination
+ * Used for browsing the main cocktail collection
+ *
  * @param index - Starting position for pagination (default: 0)
  * @param limit - Number of items per page (default: 10)
+ * @returns Promise with paginated filtered cocktail results
  */
 export const fetchCocktailsByCategory = async (
   index: number = 0,

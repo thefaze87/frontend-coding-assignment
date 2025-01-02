@@ -1,83 +1,87 @@
+/**
+ * Express Server Application
+ * Provides a RESTful API interface for cocktail data
+ *
+ * @module Server
+ * @category Backend
+ */
+
 import express from "express";
 import cors from "cors";
 import fetch from "node-fetch";
 
 /**
- * Express Server - CocktailDB API Proxy
- *
- * Provides a clean API interface between frontend and CocktailDB:
- * - Standardized response formats
- * - Error handling
- * - Request logging
- * - CORS support
- * - Pagination
- *
- * Design Pattern: RESTful API with middleware
- * Error Handling: Consistent error responses
- * Performance: Response formatting on server
- *
- * @maintainer Mark Fasel
- * @lastUpdated 2025-01-02
+ * Server Configuration Constants
  */
-
 const app = express();
 const port = 4000;
-
-// Enable CORS for frontend requests
-app.use(cors());
-// Parse JSON request bodies
-app.use(express.json());
-// Remove warning listeners (helps with development noise)
-process.removeAllListeners("warning");
-
-// Base URL for the CocktailDB API
 const COCKTAIL_DB_BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1";
 
-// Log incoming requests for debugging
+/**
+ * Middleware Setup
+ * - CORS for cross-origin requests
+ * - JSON parsing for request bodies
+ * - Request logging for debugging
+ */
+app.use(cors());
+app.use(express.json());
+process.removeAllListeners("warning");
+
+/**
+ * Request Logger Middleware
+ * Logs all incoming requests for debugging purposes
+ */
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
 
 /**
- * Helper function to extract ingredients from CocktailDB response
- * CocktailDB stores ingredients in numbered properties (strIngredient1, strIngredient2, etc.)
+ * Data Extraction Utilities
+ * Helper functions for processing CocktailDB responses
+ */
+
+/**
+ * Extracts ingredient list from raw drink data
+ * @param {Object} drink - Raw drink data from CocktailDB
+ * @returns {string[]} Array of ingredient names
  */
 function getIngredients(drink) {
   const ingredients = [];
   for (let i = 1; i <= 15; i++) {
     const ingredient = drink[`strIngredient${i}`];
-    if (ingredient) {
-      ingredients.push(ingredient);
-    }
+    if (ingredient) ingredients.push(ingredient);
   }
   return ingredients;
 }
 
 /**
- * Helper function to extract measurements from CocktailDB response
- * CocktailDB stores measurements in numbered properties (strMeasure1, strMeasure2, etc.)
+ * Extracts measurement list from raw drink data
+ * @param {Object} drink - Raw drink data from CocktailDB
+ * @returns {string[]} Array of measurements
  */
 function getMeasures(drink) {
   const measures = [];
   for (let i = 1; i <= 15; i++) {
     const measure = drink[`strMeasure${i}`];
-    if (measure) {
-      measures.push(measure.trim());
-    }
+    if (measure) measures.push(measure.trim());
   }
   return measures;
 }
 
 /**
+ * API Endpoints
+ * RESTful routes for cocktail data access
+ */
+
+/**
  * GET /api/cocktail/:id
- * Get detailed information about a specific cocktail
+ * Fetches detailed information for a specific cocktail
  *
- * @param {string} id - Cocktail ID from CocktailDB
+ * @param {string} id - Cocktail ID
  * @returns {Object} Formatted cocktail details
- * @throws {404} If cocktail not found
- * @throws {400} If ID is invalid
- * Provides better semantic values for the API
+ * @throws {404} When cocktail is not found
+ * @throws {400} When ID is invalid
  */
 app.get("/api/cocktail/:id", async (req, res) => {
   try {
@@ -155,7 +159,12 @@ app.get("/api/cocktail/:id", async (req, res) => {
 
 /**
  * GET /api/search
- * Search cocktails by name
+ * Searches cocktails with pagination support
+ *
+ * @param {string} query - Search term (optional)
+ * @param {number} index - Pagination start index
+ * @param {number} limit - Items per page
+ * @returns {Object} Paginated search results
  */
 app.get("/api/search", async (req, res) => {
   try {
@@ -233,78 +242,14 @@ app.get("/api/search", async (req, res) => {
 });
 
 /**
- * GET /api/filter/cocktails
- * Get all drinks in the Cocktail category
- */
-app.get("/api/filter/cocktails", async (req, res) => {
-  try {
-    const { index = 0, limit = 10 } = req.query;
-    const filterUrl = `${COCKTAIL_DB_BASE_URL}/filter.php?c=Cocktail`;
-    console.log("Filtering cocktail category:", filterUrl);
-
-    const response = await fetch(filterUrl);
-    const data = await response.json();
-
-    if (!data.drinks) {
-      return res.json({
-        drinks: [],
-        totalCount: 0,
-        pagination: {
-          currentPage: 0,
-          totalPages: 0,
-          pageSize: parseInt(limit),
-          startIndex: parseInt(index),
-          endIndex: parseInt(index),
-          hasMore: false,
-        },
-      });
-    }
-
-    const drinks = data.drinks || [];
-    const formattedDrinks = drinks.map((drink) => ({
-      id: parseInt(drink.idDrink),
-      name: drink.strDrink,
-      image: drink.strDrinkThumb,
-    }));
-
-    // Handle pagination
-    const startIdx = parseInt(index);
-    const endIdx = startIdx + parseInt(limit);
-    const paginatedDrinks = formattedDrinks.slice(startIdx, endIdx);
-
-    res.json({
-      drinks: paginatedDrinks,
-      totalCount: drinks.length,
-      pagination: {
-        currentPage: Math.floor(startIdx / parseInt(limit)),
-        totalPages: Math.ceil(drinks.length / parseInt(limit)),
-        pageSize: parseInt(limit),
-        startIndex: startIdx,
-        endIndex: endIdx,
-        hasMore: endIdx < drinks.length,
-      },
-    });
-  } catch (error) {
-    console.error("Error fetching cocktail category:", error);
-    res.status(500).json({ error: "Failed to fetch cocktail category" });
-  }
-});
-
-/**
- * Filter Endpoint
- * Handles cocktail filtering by category and alcohol content
+ * GET /api/filter
+ * Filters cocktails by category or alcohol content
  *
- * Design Decisions:
- * - Single endpoint with type parameter for flexibility
- * - Server-side pagination for performance
- * - Consistent response structure
- * - Error boundary implementation
- *
- * @route GET /api/filter
  * @param {string} type - Filter type ('category' or 'alcoholic')
  * @param {string} value - Filter value
  * @param {number} index - Pagination start index
  * @param {number} limit - Items per page
+ * @returns {Object} Filtered and paginated results
  */
 app.get("/api/filter", async (req, res) => {
   try {
@@ -384,16 +329,9 @@ app.get("/api/filter", async (req, res) => {
 });
 
 /**
- * Shorthand Filter Endpoints
- * Convenience routes for common filter operations
- *
- * Design Pattern: Facade pattern for common queries
- * Benefits:
- * - Simplified client usage
- * - Consistent parameter handling
- * - Maintainable route structure
+ * Shorthand Filter Routes
+ * Convenience endpoints for common filter operations
  */
-
 app.get("/api/filter/alcoholic", async (req, res) => {
   req.query.type = "alcoholic";
   req.query.value = "Alcoholic";
@@ -430,9 +368,11 @@ app.get("/api/filter/cocktail", async (req, res) => {
   await app.handle(req, res);
 });
 
-// ... (other endpoints)
-
-// Start the server
-app.listen(port, () => {
-  console.log(`API server running at http://localhost:${port}`);
+/**
+ * Server Initialization
+ * Starts the Express server on the configured port
+ */
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

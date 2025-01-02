@@ -2,6 +2,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import CocktailDetails from "../CocktailDetails";
 import { fetchCocktailById } from "../../services/cocktails/cocktailService";
 
+/**
+ * Mock the service and router dependencies
+ * Provides consistent test environment for component rendering
+ */
 jest.mock("../../services/cocktails/cocktailService");
 jest.mock("react-router-dom", () => ({
   useParams: () => ({
@@ -18,7 +22,15 @@ jest.mock("react-router-dom", () => ({
   useSearchParams: () => [new URLSearchParams(), jest.fn()],
 }));
 
+/**
+ * Test suite for CocktailDetails component
+ * Tests loading states, data rendering, and error handling
+ */
 describe("CocktailDetails Component", () => {
+  /**
+   * Mock cocktail data representing a complete cocktail response
+   * Used across different test cases
+   */
   const mockCocktail = {
     id: 11007,
     name: "Margarita",
@@ -32,11 +44,19 @@ describe("CocktailDetails Component", () => {
     alcoholic: "Alcoholic",
   };
 
+  /**
+   * Reset mocks before each test
+   * Ensures clean test environment
+   */
   beforeEach(() => {
     jest.clearAllMocks();
     (fetchCocktailById as jest.Mock).mockResolvedValue(mockCocktail);
   });
 
+  /**
+   * Test loading state display
+   * Verifies loading spinner appears while data is being fetched
+   */
   it("renders loading state initially", () => {
     (fetchCocktailById as jest.Mock).mockImplementation(
       () => new Promise(() => {})
@@ -45,6 +65,10 @@ describe("CocktailDetails Component", () => {
     expect(screen.getByAltText("Loading...")).toBeInTheDocument();
   });
 
+  /**
+   * Test successful data rendering
+   * Verifies cocktail details are displayed correctly after loading
+   */
   it("renders cocktail details after loading", async () => {
     render(<CocktailDetails />);
 
@@ -55,6 +79,10 @@ describe("CocktailDetails Component", () => {
     });
   });
 
+  /**
+   * Test error state handling
+   * Verifies error message is displayed when API call fails
+   */
   it("renders error state when fetch fails", async () => {
     (fetchCocktailById as jest.Mock).mockRejectedValue(
       new Error("Failed to fetch")

@@ -267,6 +267,12 @@ Started implementing but paused due to time constraints:
 - Refactor filter implementation
 - Improve error boundary coverage
 - Enhance test coverage
+- Remove unused dependencies
+- Add more tests
+- Add more documentation
+- Clean up comments
+- Reduce code duplication and improve readability (as needed)
+- Remove console logs and other unnecessary debugging statements
 
 ### 2. Feature Additions
 

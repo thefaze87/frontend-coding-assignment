@@ -1,21 +1,25 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  act,
-} from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import Home from "../Home";
 import {
   fetchCocktails,
   fetchCocktailsByCategory,
 } from "../../services/cocktails/cocktailService";
 
-// Mock the service
+/**
+ * Mock the cocktail service
+ * Ensures consistent test behavior for API calls
+ */
 jest.mock("../../services/cocktails/cocktailService");
 
-// No need to mock react-router-dom here since it's in setupTests.ts
+/**
+ * Test suite for Home component
+ * Tests the main landing page functionality
+ */
 describe("Home Component", () => {
+  /**
+   * Mock cocktail data representing a single drink
+   * Contains all required fields for display testing
+   */
   const mockCocktail = {
     id: 1,
     name: "Margarita",
@@ -32,18 +36,30 @@ describe("Home Component", () => {
     glass: "",
   };
 
+  /**
+   * Mock API response with pagination
+   * Simulates the structure returned by the cocktail service
+   */
   const mockResponse = {
     drinks: [mockCocktail],
     totalCount: 20,
     pagination: { hasMore: true },
   };
 
+  /**
+   * Setup before each test
+   * Resets mocks and configures default responses
+   */
   beforeEach(() => {
     jest.clearAllMocks();
     (fetchCocktails as jest.Mock).mockResolvedValue(mockResponse);
     (fetchCocktailsByCategory as jest.Mock).mockResolvedValue(mockResponse);
   });
 
+  /**
+   * Test initial render and data loading
+   * Verifies component renders correctly with fetched data
+   */
   it("renders without crashing", async () => {
     await act(async () => {
       render(<Home />);
