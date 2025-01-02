@@ -129,16 +129,24 @@ const Home = () => {
             </div>
           ) : (
             <>
-              {/* Cocktail Grid */}
-              <div className="grid grid-cols-2 gap-6">
-                {cocktails.map((cocktail) => (
-                  <CocktailCard
-                    key={cocktail.id}
-                    cocktail={cocktail}
-                    loading={false}
-                  />
-                ))}
-              </div>
+              {cocktails.length > 0 ? (
+                /* Cocktail Grid */
+                <div className="grid grid-cols-2 gap-6">
+                  {cocktails.map((cocktail) => (
+                    <CocktailCard
+                      key={cocktail.id}
+                      cocktail={cocktail}
+                      loading={false}
+                    />
+                  ))}
+                </div>
+              ) : (
+                /* No Results Message */
+                <div className="flex flex-col items-center justify-center min-h-[400px] text-white/80">
+                  <p className="text-xl mb-2">No drinks found</p>
+                  <p>Try searching for something else</p>
+                </div>
+              )}
 
               {/* Pagination Controls */}
               {cocktails.length > 0 && (

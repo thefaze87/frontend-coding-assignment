@@ -61,6 +61,7 @@ body {
       background-color: #fff;
       border: 2px solid transparent;
       color: #000;
+      cursor: default;
       &:focus {
         outline: none;
         border: 2px solid gray;
@@ -73,13 +74,22 @@ body {
       border-radius: 0.5rem;
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
-      transition: background-color 0.3s ease-in-out;
+      transition: all 0.3s ease-in-out;
       &:hover {
+        background-color: #1a5ed8;
+      }
+      &.bg-green-600 {
         background-color: #0b873d;
       }
       .copy-icon {
         width: 1.5rem;
         height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        img {
+          transition: transform 0.2s ease-in-out;
+        }
       }
 
       .copy-icon-text {

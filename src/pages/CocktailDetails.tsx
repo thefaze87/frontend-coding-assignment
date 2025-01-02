@@ -13,6 +13,31 @@ import checkIcon from "../assets/icons/Check-Icon.svg";
 import Header from "../components/Header";
 
 /**
+ * Custom hook for copying text to clipboard
+ * @param timeout - Duration to show success state (ms)
+ * @returns {copied, copy} - State and function for copying text
+ * @example
+ * const { copied, copy } = useCopyToClipboard();
+ * copy("Hello, world!");
+ * Used a simlilar approach to this one in documentation with RxJs but to copy blocks of code snippets for Scorpion. I had implemented it within our angular projects to help other developers quickly copy code snippets.
+ */
+const useCopyToClipboard = (timeout = 2000) => {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), timeout);
+    } catch (error) {
+      console.error("Failed to copy text:", error);
+    }
+  };
+
+  return { copied, copy };
+};
+
+/**
  * CocktailDetails component displays detailed information about a specific cocktail
  * Features:
  * - Fetches and displays detailed cocktail information
@@ -32,6 +57,9 @@ const CocktailDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [displayValue, setDisplayValue] = useState("");
+
+  const { copied, copy } = useCopyToClipboard();
+  const shareUrl = `${window.location.origin}/cocktail/${id}`; // TODO: While this works, it's not a permanent solution. We need to find a way to get the share url from the backend. The URL is also only based on the site its serving from and there may be better solutions to handle graceful degradation esecially if the API serivce is down.
 
   // Update display value when search params change
   useEffect(() => {
@@ -203,17 +231,24 @@ const CocktailDetails = () => {
             <div className="share-link">
               <h2 className="cocktail-sub-heading">Share Link</h2>
               <div className="flex justify-between">
-                <input
-                  type="text"
-                  value={`https://www.thecocktaildb.com/drink/${cocktail.id}`}
-                  className="grow"
-                />
-                <a href="#" className="copy-link flex items-center gap-2 fit">
+                <input type="text" value={shareUrl} readOnly className="grow" />
+                <button
+                  onClick={() => copy(shareUrl)}
+                  className={`copy-link flex items-center gap-2 fit transition-colors duration-300 ${
+                    copied ? "bg-green-600" : ""
+                  }`}
+                  aria-label={copied ? "Copied!" : "Copy to clipboard"}
+                >
                   <span className="copy-icon">
-                    <img src={copyIcon} alt="Copy" />
+                    <img
+                      src={copied ? checkIcon : copyIcon}
+                      alt={copied ? "Copied" : "Copy"}
+                    />
                   </span>
-                  <span className="copy-icon-text">Copy</span>
-                </a>
+                  <span className="copy-icon-text">
+                    {copied ? "Copied!" : "Copy"}
+                  </span>
+                </button>
               </div>
             </div>
           </div>
