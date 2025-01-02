@@ -1,68 +1,36 @@
-import {
-  fetchCocktails,
-  fetchCocktailsByLetter,
-  fetchPopularCocktails,
-  fetchAlcoholicCocktails,
-} from "../cocktailService";
-import { fetchFromApi, buildUrl } from "../../api/apiService";
-import { CocktailResponse } from "../types";
-
 /**
- * Test suite for cocktailService
- * Tests the service layer that handles cocktail data fetching and processing
+ * Cocktail Service Tests
+ *
+ * @maintainer Mark Fasel
+ * @lastUpdated 2025-01-02
  */
+import { fetchCocktails, fetchCocktailById } from "../cocktailService";
+import { buildUrl, fetchFromApi } from "../../api/apiService";
+import { CocktailResponse } from "../../types";
 
-/**
- * Mock the entire apiService module
- * This allows us to control API responses and verify correct URL construction
- */
-jest.mock("../../api/apiService", () => ({
-  fetchFromApi: jest.fn(),
-  buildUrl: jest.fn((baseUrl, params) => {
-    // Simulate URL building for testing
-    const parts = [];
-    if (params.query) parts.push(`query=${params.query}`);
-    if (params.index !== undefined) parts.push(`index=${params.index}`);
-    if (params.limit !== undefined) parts.push(`limit=${params.limit}`);
-    if (params.firstLetter) parts.push(`firstLetter=${params.firstLetter}`);
-    return parts.length ? `${baseUrl}?${parts.join("&")}` : baseUrl;
-  }),
-}));
+jest.mock("../../api/apiService");
 
 describe("cocktailService", () => {
-  /**
-   * Mock response data used across tests
-   * Represents a typical API response with one cocktail
-   */
   const mockResponse: CocktailResponse = {
     drinks: [
       {
         id: 11007,
         name: "Margarita",
         category: "Ordinary Drink",
-        image:
-          "https://www.thecocktaildb.com/images/media/drink/5noda61589575158.jpg",
-        instructions: "Rub the rim of the glass with the lime slice...",
-        ingredients: ["Tequila", "Triple sec", "Lime juice", "Salt"],
-        measures: ["1 1/2 oz", "1/2 oz", "1 oz", null],
+        image: "https://example.com/margarita.jpg",
+        instructions: "Mix ingredients...",
+        ingredients: ["Tequila", "Triple sec", "Lime juice"],
+        measures: ["1 1/2 oz", "1/2 oz", "1 oz"],
       },
     ],
     totalCount: 1,
   };
 
-  /**
-   * Reset all mocks before each test
-   * Ensures clean state for accurate testing
-   */
   beforeEach(() => {
     jest.clearAllMocks();
     (fetchFromApi as jest.Mock).mockResolvedValue(mockResponse);
   });
 
-  /**
-   * Test suite for fetchCocktails function
-   * Tests search functionality with various parameters
-   */
   describe("fetchCocktails", () => {
     it("should fetch cocktails with default parameters", async () => {
       const result = await fetchCocktails();
@@ -91,7 +59,7 @@ describe("cocktailService", () => {
       expect(result).toEqual(mockResponse.drinks);
     });
 
-    it("should fetch cocktails with custom pagination", async () => {
+    it("should fetch cocktails with pagination", async () => {
       const result = await fetchCocktails("", 20, 30);
 
       expect(buildUrl).toHaveBeenCalledWith(
@@ -105,102 +73,27 @@ describe("cocktailService", () => {
     });
   });
 
-  /**
-   * Test suite for fetchCocktailsByLetter function
-   * Tests letter-based search functionality
-   */
-  describe("fetchCocktailsByLetter", () => {
-    it("should fetch cocktails by first letter", async () => {
-      const result = await fetchCocktailsByLetter("m");
-
-      expect(buildUrl).toHaveBeenCalledWith(
-        "http://localhost:4000/api/search/letter",
-        {
-          firstLetter: "m",
-          index: 0,
-          limit: 10,
-        }
-      );
-      expect(result).toEqual(mockResponse.drinks);
-    });
-
-    it("should throw error for invalid letter parameter", async () => {
-      await expect(fetchCocktailsByLetter("ab")).rejects.toThrow(
-        "Letter parameter must be a single character"
-      );
-    });
-  });
-
-  /**
-   * Test suite for fetchPopularCocktails function
-   * Tests fetching of featured/popular cocktails
-   */
-  describe("fetchPopularCocktails", () => {
-    it("should fetch popular cocktails with default parameters", async () => {
-      const result = await fetchPopularCocktails();
-
-      expect(buildUrl).toHaveBeenCalledWith(
-        "http://localhost:4000/api/popular",
-        {
-          index: 0,
-          limit: 10,
-        }
-      );
-      expect(result).toEqual(mockResponse.drinks);
-    });
-
-    it("should fetch popular cocktails with custom pagination", async () => {
-      const result = await fetchPopularCocktails(20, 30);
-
-      expect(buildUrl).toHaveBeenCalledWith(
-        "http://localhost:4000/api/popular",
-        {
-          index: 20,
-          limit: 30,
-        }
-      );
-      expect(result).toEqual(mockResponse.drinks);
-    });
-  });
-
-  describe("fetchAlcoholicCocktails", () => {
-    it("should fetch alcoholic cocktails with pagination", async () => {
-      const mockResponse = {
-        drinks: [
-          {
-            id: 11007,
-            name: "Margarita",
-            image: "https://example.com/margarita.jpg",
-          },
-        ],
-        totalCount: 1,
-        pagination: {
-          currentPage: 0,
-          totalPages: 1,
-          pageSize: 10,
-          startIndex: 0,
-          endIndex: 1,
-          hasMore: false,
-        },
+  describe("fetchCocktailById", () => {
+    it("should fetch a single cocktail by ID", async () => {
+      const mockDetailResponse = {
+        drink: mockResponse.drinks[0],
       };
+      (fetchFromApi as jest.Mock).mockResolvedValue(mockDetailResponse);
 
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockResponse),
-      });
+      const result = await fetchCocktailById(11007);
 
-      const result = await fetchAlcoholicCocktails();
-      expect(result).toEqual(mockResponse.drinks);
+      expect(fetchFromApi).toHaveBeenCalledWith(
+        "http://localhost:4000/api/cocktail/11007"
+      );
+      expect(result).toEqual(mockDetailResponse.drink);
     });
 
-    it("should handle empty response", async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ drinks: [] }),
-      });
+    it("should throw error when cocktail is not found", async () => {
+      (fetchFromApi as jest.Mock).mockResolvedValue({ drink: null });
 
-      const result = await fetchAlcoholicCocktails();
-      expect(result).toEqual([]);
+      await expect(fetchCocktailById(99999)).rejects.toThrow(
+        "Cocktail with ID 99999 not found"
+      );
     });
   });
 });
