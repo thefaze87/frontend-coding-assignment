@@ -9,6 +9,38 @@ import {
 
 const API_BASE_URL = "http://localhost:4000/api";
 
+/**
+ * Helper function to extract ingredients from API response
+ * @param data - Raw cocktail data from API
+ * @returns Array of ingredient names
+ */
+const extractIngredients = (data: any): string[] => {
+  const ingredients: string[] = [];
+  for (let i = 1; i <= 15; i++) {
+    const ingredient = data[`strIngredient${i}`];
+    if (ingredient) {
+      ingredients.push(ingredient);
+    }
+  }
+  return ingredients;
+};
+
+/**
+ * Helper function to extract measurements from API response
+ * @param data - Raw cocktail data from API
+ * @returns Array of measurements
+ */
+const extractMeasures = (data: any): string[] => {
+  const measures: string[] = [];
+  for (let i = 1; i <= 15; i++) {
+    const measure = data[`strMeasure${i}`];
+    if (measure) {
+      measures.push(measure.trim());
+    }
+  }
+  return measures;
+};
+
 export const fetchCocktails = async (
   query: string = "",
   index: number = 0,
@@ -95,3 +127,18 @@ export const fetchCocktailById = async (id: number): Promise<Cocktail> => {
     throw error;
   }
 };
+
+const mapCocktailDetails = (data: any): Cocktail => ({
+  id: data.idDrink,
+  name: data.strDrink,
+  category: data.strCategory,
+  image: data.strDrinkThumb,
+  instructions: data.strInstructions,
+  ingredients: extractIngredients(data),
+  measures: extractMeasures(data),
+  tags: data.strTags,
+  video: data.strVideo,
+  iba: data.strIBA,
+  alcoholic: data.strAlcoholic,
+  glass: data.strGlass,
+});

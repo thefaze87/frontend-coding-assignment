@@ -122,6 +122,11 @@ app.get("/api/cocktail/:id", async (req, res) => {
       instructions: drink.strInstructions,
       ingredients: getIngredients(drink),
       measures: getMeasures(drink),
+      tags: drink.strTags,
+      video: drink.strVideo,
+      iba: drink.strIBA,
+      alcoholic: drink.strAlcoholic,
+      glass: drink.strGlass,
     };
 
     res.json({ drink: formattedDrink });

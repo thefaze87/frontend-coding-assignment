@@ -133,7 +133,7 @@ const CocktailDetails = () => {
         </Link>
 
         {/* Cocktail title */}
-        <h1 className="text-4xl text-white mb-4 mt-6">{cocktail.name}</h1>
+        <h1 className="cocktail-heading mb-4 mt-6">{cocktail.name}</h1>
 
         {/* Main content container */}
         <div className="border-1 border-white rounded-lg p-8 mt-4">
@@ -168,15 +168,27 @@ const CocktailDetails = () => {
           </div>
 
           {/* Category tag */}
-          <span className="cocktail-category inline-block rounded-lg px-3 py-1 border-1 border-white text-white mb-6">
-            {cocktail.category}
-          </span>
+          <div className="flex flex-wrap gap-2 mb-6">
+            <span className="cocktail-tag ">{cocktail.category}</span>
+            {cocktail.alcoholic && (
+              <span className="cocktail-tag">{cocktail.alcoholic}</span>
+            )}
+            {cocktail.glass && (
+              <span className="cocktail-tag">{cocktail.glass}</span>
+            )}
+            {cocktail.iba && (
+              <span className="cocktail-tag">IBA: {cocktail.iba}</span>
+            )}
+            {cocktail.tags && (
+              <span className="cocktail-tag">Tags: {cocktail.tags}</span>
+            )}
+          </div>
 
           <div className="flex flex-col gap-4">
             {/* Instructions section */}
             {cocktail.instructions && (
               <div className="mb-8">
-                <h2 className="text-xl text-white mb-2">Instructions</h2>
+                <h2 className="cocktail-sub-heading">Instructions</h2>
                 <p className="text-white/80">{cocktail.instructions}</p>
               </div>
             )}

@@ -15,6 +15,11 @@ export interface Cocktail {
   instructions?: string; // Step-by-step mixing instructions
   ingredients?: string[]; // Array of ingredient names
   measures?: string[]; // Array of measurements corresponding to ingredients
+  tags?: string | null;
+  video?: string | null;
+  iba?: string | null;
+  alcoholic?: string;
+  glass?: string;
 }
 
 /**

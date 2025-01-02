@@ -48,3 +48,36 @@ body {
 .loading-icon {
   filter: brightness(0) saturate(100%) invert(100%);
 }
+
+.cocktail-heading {
+  // Design uses sf pro rounded and I didn't find it in google fonts.
+  font-family: "Varela Round", serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 2.25rem;
+  color: #fff;
+}
+
+.cocktail-sub-heading {
+  // Design uses sf pro rounded and I didn't find it in google fonts.
+  font-family: "Varela Round", serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1.13rem;
+  line-height: 1.5rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.cocktail-tag {
+  font-family: "Varela Round", serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 0.69rem;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  line-height: normal;
+}
