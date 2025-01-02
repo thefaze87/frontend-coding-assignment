@@ -47,7 +47,12 @@
     "noEmit": true,
 
     // Support JSX for React
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*"]
+    }
   },
 
   // Files to include in compilation
