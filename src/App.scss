@@ -1,3 +1,32 @@
+/**
+ * Global Styles
+ * 
+ * Purpose:
+ * - Define core application styling
+ * - Establish design system implementation
+ * - Handle responsive layouts
+ * - Manage theme configuration
+ * 
+ * Architecture:
+ * - Tailwind integration
+ * - Custom component styles
+ * - Utility classes
+ * - Theme variables
+ * 
+ * Design System:
+ * - Color palette
+ * - Typography scale
+ * - Spacing units
+ * - Component variants
+ * - Animation timings
+ * 
+ * Implementation Notes:
+ * - Mobile-first approach
+ * - Performance optimization
+ * - CSS custom properties
+ * - Modular structure
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

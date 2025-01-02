@@ -2,6 +2,41 @@ import React from "react";
 import searchIcon from "../assets/icons/Search-Icon.svg";
 
 /**
+ * Header Component
+ *
+ * Purpose:
+ * - Primary navigation and search interface
+ * - Maintains search state and history
+ * - Provides search suggestions
+ * - Handles user input and submission
+ *
+ * Architecture:
+ * - Controlled form component
+ * - URL-based state management
+ * - Responsive design patterns
+ * - Accessibility features
+ *
+ * Design Decisions:
+ * - Clean, minimal interface
+ * - Immediate visual feedback
+ * - Persistent search context
+ * - Mobile-friendly layout
+ *
+ * UX Considerations:
+ * - Clear visual hierarchy
+ * - Intuitive search flow
+ * - Helpful suggestions
+ * - Keyboard navigation
+ * - Loading states
+ *
+ * Technical Implementation:
+ * - Form validation
+ * - State synchronization
+ * - Event handling
+ * - Prop type safety
+ */
+
+/**
  * Props interface for the Header component
  * @property displayValue - Current value to show in the search input
  * @property onSearch - Callback function triggered when search is submitted

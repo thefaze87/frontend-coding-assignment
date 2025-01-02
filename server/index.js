@@ -1,3 +1,19 @@
+/**
+ * Express Server Configuration
+ *
+ * Architecture Overview:
+ * - Acts as a proxy to CocktailDB API
+ * - Provides normalized endpoints for frontend
+ * - Handles data transformation and error cases
+ * - Implements proper CORS and security measures
+ *
+ * Key Features:
+ * - Search endpoint with pagination
+ * - Filter endpoints for categories
+ * - Detailed cocktail information
+ * - Error handling and logging
+ */
+
 import express from "express";
 import cors from "cors";
 import fetch from "node-fetch";
@@ -146,8 +162,18 @@ app.get("/api/cocktail/:id", async (req, res) => {
 });
 
 /**
- * GET /api/search
- * Search cocktails by name
+ * Search Endpoint
+ *
+ * Design Considerations:
+ * - Supports both search and filter operations
+ * - Implements pagination for large result sets
+ * - Normalizes response format
+ * - Handles edge cases (empty results, invalid params)
+ *
+ * @route GET /api/search
+ * @param {string} query - Search term or filter category
+ * @param {number} index - Pagination start index
+ * @param {number} limit - Items per page
  */
 app.get("/api/search", async (req, res) => {
   try {

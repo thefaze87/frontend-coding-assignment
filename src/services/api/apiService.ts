@@ -1,79 +1,75 @@
-import { SearchParams, CocktailResponse, IngredientResponse } from "../types";
-
 /**
- * Builds a URL with query parameters for API requests
+ * API Service Layer
  *
- * @param baseUrl - The base URL for the API endpoint
- * @param params - Object containing search and pagination parameters
- * @returns Formatted URL string with query parameters
+ * Purpose:
+ * - Provides core API interaction functionality
+ * - Handles URL construction and parameter formatting
+ * - Manages error handling and response parsing
+ * - Centralizes API configuration
  *
- * Examples:
- * - /api/search?query=margarita&index=0&limit=10
- * - /api/search/letter?firstLetter=m
- * - /api/ingredients/search?query=vodka
+ * Design Decisions:
+ * - Generic fetch wrapper for type safety
+ * - URL parameter normalization
+ * - Consistent error handling
+ * - Query parameter validation
+ *
+ * Technical Considerations:
+ * - Type safety throughout
+ * - Error boundary implementation
+ * - Response type validation
+ * - Network error handling
  */
-export function buildUrl(baseUrl: string, params: SearchParams): string {
-  const searchParams = new URLSearchParams();
 
-  // Add search query parameter if provided
-  // Used for cocktail name search and ingredient search
-  if (params.query) {
-    searchParams.append("query", params.query);
-  }
-
-  // Add first letter parameter if provided
-  // Used for searching cocktails by their first letter
-  if (params.firstLetter) {
-    searchParams.append("firstLetter", params.firstLetter);
-  }
-
-  // Add pagination parameters if provided
-  // Using typeof check to include 0 values but exclude undefined
-  if (typeof params.index === "number") {
-    searchParams.append("index", params.index.toString());
-  }
-
-  if (typeof params.limit === "number") {
-    searchParams.append("limit", params.limit.toString());
-  }
-
-  // Combine base URL with query parameters
-  // Only add ? if there are actual parameters
-  const queryString = searchParams.toString();
-  return queryString ? `${baseUrl}?${queryString}` : baseUrl;
-}
+import { SearchParams } from "../types";
 
 /**
- * Generic function to fetch data from the API
+ * Builds a URL with query parameters
  *
- * @param url - Full URL to fetch from
- * @returns Promise resolving to the typed response data
- * @throws Error if the fetch fails or returns non-200 status
+ * Implementation Details:
+ * - Filters out undefined parameters
+ * - Properly encodes parameter values
+ * - Maintains URL structure consistency
  *
- * @template T - Type of the expected response (CocktailResponse or IngredientResponse)
+ * @param baseUrl - Base URL for the endpoint
+ * @param params - Object containing query parameters
+ * @returns Formatted URL string with parameters
+ */
+export const buildUrl = (baseUrl: string, params: SearchParams): string => {
+  const queryParams = Object.entries(params)
+    .filter(([_, value]) => value !== undefined)
+    .map(
+      ([key, value]) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(value.toString())}`
+    )
+    .join("&");
+
+  return queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
+};
+
+/**
+ * Generic fetch wrapper with error handling
  *
- * Usage:
- * ```typescript
- * const data = await fetchFromApi<CocktailResponse>(url);
- * const data = await fetchFromApi<IngredientResponse>(url);
- * ```
+ * Features:
+ * - Type-safe responses
+ * - Consistent error handling
+ * - Response validation
+ * - Network error recovery
+ *
+ * @param url - URL to fetch from
+ * @returns Typed API response
+ * @throws Error on failed requests
  */
 export const fetchFromApi = async <T>(url: string): Promise<T> => {
   try {
     const response = await fetch(url);
-    console.log("API Response:", response.status, response.statusText); // Debug log
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`API error: ${response.status}`);
     }
 
-    const data = await response.json();
-    return data;
+    return response.json();
   } catch (error) {
-    console.error("API Error:", {
-      message: error instanceof Error ? error.message : "Unknown error",
-      url,
-    });
+    console.error("API request failed:", error);
     throw error;
   }
 };

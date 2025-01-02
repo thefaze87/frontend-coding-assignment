@@ -4,6 +4,41 @@ import { Cocktail } from "../../services/types";
 import "./CocktailCard.scss";
 
 /**
+ * CocktailCard Component
+ *
+ * Purpose:
+ * - Display individual cocktail preview
+ * - Handle navigation to details
+ * - Manage loading states
+ * - Preserve search context
+ *
+ * Architecture:
+ * - Presentational component
+ * - URL-based navigation
+ * - State preservation
+ * - Responsive design
+ *
+ * Design Decisions:
+ * - Card-based layout
+ * - Image optimization
+ * - Loading skeleton
+ * - Interactive states
+ *
+ * UX Considerations:
+ * - Clear visual hierarchy
+ * - Loading feedback
+ * - Hover interactions
+ * - Accessible navigation
+ * - Image fallbacks
+ *
+ * Performance:
+ * - Lazy loading
+ * - Memory efficiency
+ * - Transition handling
+ * - State management
+ */
+
+/**
  * CocktailCard component displays a preview of a cocktail
  * Features:
  * - Displays cocktail image, name, and category

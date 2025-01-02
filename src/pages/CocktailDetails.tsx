@@ -13,13 +13,45 @@ import checkIcon from "../assets/icons/Check-Icon.svg";
 import Header from "../components/Header";
 
 /**
- * Custom hook for copying text to clipboard
- * @param timeout - Duration to show success state (ms)
- * @returns {copied, copy} - State and function for copying text
- * @example
- * const { copied, copy } = useCopyToClipboard();
- * copy("Hello, world!");
- * Used a simlilar approach to this one in documentation with RxJs but to copy blocks of code snippets for Scorpion. I had implemented it within our angular projects to help other developers quickly copy code snippets.
+ * CocktailDetails Page Component
+ *
+ * Purpose:
+ * - Display comprehensive cocktail information
+ * - Handle data fetching and state management
+ * - Provide sharing functionality
+ * - Support navigation flow
+ *
+ * Architecture:
+ * - Implements URL-based routing
+ * - Uses custom hooks for clipboard
+ * - Manages loading/error states
+ * - Handles API integration
+ *
+ * UX Considerations:
+ * - Progressive loading states
+ * - Clear error messaging
+ * - Intuitive navigation
+ * - Responsive layout
+ * - Accessible content structure
+ *
+ * Technical Implementation:
+ * - URL parameter handling
+ * - Clipboard API integration
+ * - Error boundary support
+ * - Type-safe data handling
+ * - Memory efficient loading
+ */
+
+/**
+ * Custom hook for clipboard operations
+ *
+ * Features:
+ * - Async clipboard access
+ * - Success state management
+ * - Error handling
+ * - Timeout cleanup
+ *
+ * @param timeout - Duration to show success state
  */
 const useCopyToClipboard = (timeout = 2000) => {
   const [copied, setCopied] = useState(false);
@@ -39,14 +71,26 @@ const useCopyToClipboard = (timeout = 2000) => {
 };
 
 /**
- * CocktailDetails component displays detailed information about a specific cocktail
- * Features:
- * - Fetches and displays detailed cocktail information
- * - Shows loading states while fetching
- * - Handles errors with user-friendly messages
+ * CocktailDetails Component
+ *
+ * Purpose:
+ * - Displays detailed information about a specific cocktail
+ * - Handles loading and error states
  * - Provides navigation back to search
- * - Maintains search functionality in header
+ *
+ * Design Decisions:
+ * - Clean, focused layout for readability
+ * - Responsive image handling
+ * - Clear ingredient presentation
+ * - Graceful error handling
+ *
+ * UX Considerations:
+ * - Back navigation for better user flow
+ * - Loading states for feedback
+ * - Clear ingredient measurements
+ * - Accessible headings and structure
  */
+
 const CocktailDetails = () => {
   // Get cocktail ID from URL parameters
   const { id } = useParams<{ id: string }>();

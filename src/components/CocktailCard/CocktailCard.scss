@@ -1,28 +1,71 @@
-// Add any custom styles for the CocktailCard component here
-.cocktail-card {
-  transition: transform 0.2s ease-in-out;
+/**
+ * CocktailCard Styles
+ * 
+ * Purpose:
+ * - Define card-specific styling
+ * - Handle component states
+ * - Manage transitions
+ * - Support responsive layout
+ * 
+ * Design System:
+ * - Card dimensions
+ * - Shadow effects
+ * - Color palette
+ * - Typography
+ * - Spacing units
+ * 
+ * States:
+ * - Default
+ * - Hover
+ * - Loading
+ * - Focus
+ * - Active
+ * 
+ * Responsive Behavior:
+ * - Mobile optimization
+ * - Grid adaptation
+ * - Image scaling
+ * - Text wrapping
+ */
 
-  &:hover {
-    transform: translateY(-2px);
-    cursor: pointer;
+.cocktail-card {
+  /* Base Card Styling */
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+
+  /* Image Container */
+  img {
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease-in-out;
   }
 
+  /* Hover Effects */
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+
+    img {
+      transform: scale(1.05);
+    }
+  }
+
+  /* Typography */
   .cocktail-name {
     font-family: "Varela Round", serif;
     font-weight: 400;
-    font-style: normal;
-    font-size: 2rem;
     color: #fff;
   }
 
   .cocktail-category {
     font-family: "Varela Round", serif;
-    font-weight: 400;
-    font-style: normal;
-    font-size: 0.69rem;
-    line-height: 21px;
-    letter-spacing: 1px;
-    color: #fff;
-    text-transform: uppercase;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* Loading State */
+  &.loading {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
