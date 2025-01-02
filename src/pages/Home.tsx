@@ -47,6 +47,7 @@ const Home = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [filterLabel, setFilterLabel] = useState<string>("All Drinks");
 
   /**
    * Handles search input changes
@@ -84,29 +85,38 @@ const Home = () => {
   }, []); // Keep as mount-only to prevent search loop
 
   /**
-   * Fetch cocktails when search parameters change
+   * Fetch cocktails when search parameters or filters change
    */
   useEffect(() => {
     const getCocktails = async () => {
       try {
         setLoading(true);
+        setCocktails([]); // Clear existing results while loading
+
         const results = await fetchFilteredCocktails(
           activeFilter,
           index,
           limit
         );
-        setCocktails(results.drinks);
-        setTotalCount(results.totalCount);
-        setHasMore(results.pagination?.hasMore || false);
+
+        console.log("Fetched results:", results); // Debug log
+
+        if (results.drinks) {
+          setCocktails(results.drinks);
+          setTotalCount(results.totalCount);
+          setHasMore(results.pagination?.hasMore || false);
+        }
       } catch (error) {
         console.error("Failed to fetch cocktails", error);
+        setCocktails([]); // Clear on error
       } finally {
         setLoading(false);
+        setIsSearching(false);
       }
     };
 
     getCocktails();
-  }, [activeFilter, index, limit]);
+  }, [activeFilter, index, limit]); // Ensure activeFilter is in dependencies
 
   // Calculate pagination state
   const currentPage = Math.floor(index / limit) + 1;
@@ -115,11 +125,23 @@ const Home = () => {
 
   /**
    * Handles filter changes
-   * Resets pagination and updates results
+   * Updates results and display text
    */
   const handleFilterChange = (endpoint: string | null) => {
     setActiveFilter(endpoint);
-    setIndex(0); // Reset pagination when filter changes
+    setIndex(0); // Reset pagination
+    setIsDefaultView(false);
+
+    // Update display text based on selected filter
+    const selectedFilter = FILTER_CATEGORIES.find(
+      (f) => f.endpoint === endpoint
+    );
+    setFilterLabel(selectedFilter?.label || "All Drinks");
+
+    // Clear search when switching filters
+    setDisplayValue("");
+    setQuery("");
+    setSearchParams({});
   };
 
   return (
@@ -131,9 +153,7 @@ const Home = () => {
         onFilterChange={handleFilterChange}
       />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
-        <h2 className="mb-4">
-          {isDefaultView ? "All Drinks" : `Search Results: ${query}`}
-        </h2>
+        <h2 className="mb-4">{isDefaultView ? "All Drinks" : filterLabel}</h2>
 
         <div className="min-h-[600px]">
           {isSearching || loading ? (

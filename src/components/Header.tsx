@@ -92,8 +92,8 @@ const Header = ({
               onClick={() => onFilterChange(endpoint)}
               className={`px-4 py-2 rounded-lg transition-colors ${
                 activeFilter === endpoint
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                  ? "text-white"
+                  : "text-gray-400 hover:text-white"
               }`}
             >
               {label}
