@@ -89,7 +89,7 @@ const CocktailDetails = () => {
     );
   }
 
-  // Show error message if fetch failed
+  // Show error message if fetch failed. Mostly for debugging.
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
@@ -118,12 +118,16 @@ const CocktailDetails = () => {
   // Return null if no cocktail data (shouldn't normally happen)
   if (!cocktail) return null;
 
+  if (cocktail.ingredients) {
+    const ingredientsCount = cocktail.ingredients.length;
+  }
+
   // Render cocktail details
   return (
     <>
       <Header displayValue={displayValue} onSearch={handleSearch} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Navigation back to search */}
+      <div className="w-630 mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Navigation back to search. Wasn't in the design doc, but I added it to help with navigation and user experience. */}
         <Link to="/" className="text-white mb-4 inline-block hover:underline">
           ← Back to search
         </Link>
@@ -138,23 +142,17 @@ const CocktailDetails = () => {
             <img
               src={cocktail.image}
               alt={cocktail.name}
-              className="w-96 h-96 object-cover rounded-lg"
+              className="w-[220px] h-[220px] rounded-lg"
             />
 
             {/* Details section */}
             <div className="flex-1">
-              {/* Instructions section */}
-              {cocktail.instructions && (
-                <div className="mb-8">
-                  <h2 className="text-xl text-white mb-2">Instructions</h2>
-                  <p className="text-white/80">{cocktail.instructions}</p>
-                </div>
-              )}
-
               {/* Ingredients section */}
               {cocktail.ingredients && cocktail.ingredients.length > 0 && (
                 <div>
-                  <h2 className="text-xl text-white mb-2">Ingredients</h2>
+                  <h2 className="text-xl text-white mb-2">
+                    {`${cocktail.ingredients.length === 1 ? "Ingredient" : cocktail.ingredients.length + " Ingredients"}`}
+                  </h2>
                   <ul className="text-white/80">
                     {cocktail.ingredients.map((ingredient, index) => (
                       <li key={ingredient} className="mb-1">
@@ -173,6 +171,16 @@ const CocktailDetails = () => {
           <span className="cocktail-category inline-block rounded-lg px-3 py-1 border-1 border-white text-white mb-6">
             {cocktail.category}
           </span>
+
+          <div className="flex flex-col gap-4">
+            {/* Instructions section */}
+            {cocktail.instructions && (
+              <div className="mb-8">
+                <h2 className="text-xl text-white mb-2">Instructions</h2>
+                <p className="text-white/80">{cocktail.instructions}</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

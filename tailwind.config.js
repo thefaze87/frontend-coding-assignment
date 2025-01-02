@@ -14,6 +14,9 @@ module.exports = {
       transitionTimingFunction: {
         pagination: "cubic-bezier(0.4, 0, 0.2, 1)",
       },
+      width: {
+        630: "39.38rem",
+      },
     },
   },
   plugins: [],

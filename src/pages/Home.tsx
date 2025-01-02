@@ -96,42 +96,45 @@ const Home = () => {
   return (
     <>
       <Header displayValue={displayValue} onSearch={handleSearch} />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
         <h2 className="mb-4">All Drinks</h2>
 
-        {isSearching || loading ? (
-          <div className="flex justify-center items-center h-[calc(100vh-80px)]">
-            <img
-              src={loaderIcon}
-              alt="Loading..."
-              className="w-16 h-16 loading-icon animate-spin"
-            />
-          </div>
-        ) : (
-          <>
-            {/* Cocktail Grid */}
-            <div className="grid grid-cols-2 gap-6">
-              {cocktails.map((cocktail) => (
-                <CocktailCard
-                  key={cocktail.id}
-                  cocktail={cocktail}
-                  loading={false}
-                />
-              ))}
-            </div>
-
-            {/* Pagination Controls */}
-            {cocktails.length > 0 && (
-              <Pagination
-                index={index}
-                limit={limit}
-                hasMore={cocktails.length >= limit}
-                onNext={() => setIndex(index + limit)}
-                onPrevious={() => setIndex(Math.max(0, index - limit))}
+        {/* Content Container with fixed height */}
+        <div className="min-h-[600px]">
+          {isSearching || loading ? (
+            <div className="absolute inset-0 flex justify-center items-center">
+              <img
+                src={loaderIcon}
+                alt="Loading..."
+                className="w-16 h-16 loading-icon animate-spin"
               />
-            )}
-          </>
-        )}
+            </div>
+          ) : (
+            <>
+              {/* Cocktail Grid */}
+              <div className="grid grid-cols-2 gap-6">
+                {cocktails.map((cocktail) => (
+                  <CocktailCard
+                    key={cocktail.id}
+                    cocktail={cocktail}
+                    loading={false}
+                  />
+                ))}
+              </div>
+
+              {/* Pagination Controls */}
+              {cocktails.length > 0 && (
+                <Pagination
+                  index={index}
+                  limit={limit}
+                  hasMore={cocktails.length >= limit}
+                  onNext={() => setIndex(index + limit)}
+                  onPrevious={() => setIndex(Math.max(0, index - limit))}
+                />
+              )}
+            </>
+          )}
+        </div>
       </main>
     </>
   );
