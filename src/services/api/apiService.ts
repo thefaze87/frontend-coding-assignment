@@ -43,6 +43,8 @@ export function buildUrl(baseUrl: string, params: SearchParams): string {
   return queryString ? `${baseUrl}?${queryString}` : baseUrl;
 }
 
+const API_BASE_URL = "http://localhost:4000/api";
+
 /**
  * Generic function to fetch data from the API
  *
@@ -58,22 +60,16 @@ export function buildUrl(baseUrl: string, params: SearchParams): string {
  * const data = await fetchFromApi<IngredientResponse>(url);
  * ```
  */
-export const fetchFromApi = async <T>(url: string): Promise<T> => {
-  try {
-    const response = await fetch(url);
-    console.log("API Response:", response.status, response.statusText); // Debug log
+export const fetchFromApi = async <T>(endpoint: string): Promise<T> => {
+  const url = endpoint.startsWith("http")
+    ? endpoint
+    : `${API_BASE_URL}${endpoint}`;
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+  const response = await fetch(url);
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("API Error:", {
-      message: error instanceof Error ? error.message : "Unknown error",
-      url,
-    });
-    throw error;
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.statusText}`);
   }
+
+  return response.json();
 };

@@ -9,6 +9,10 @@ import CocktailCard from "../components/CocktailCard/CocktailCard";
 import Pagination from "../components/Pagination";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import loaderIcon from "../assets/icons/spinner.svg";
+import {
+  FILTER_CATEGORIES,
+  fetchFilteredCocktails,
+} from "../services/filters/filterService";
 
 /**
  * Home Component
@@ -41,6 +45,7 @@ const Home = () => {
   const [isDefaultView, setIsDefaultView] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   /**
    * Handles search input changes
@@ -84,44 +89,23 @@ const Home = () => {
     const getCocktails = async () => {
       try {
         setLoading(true);
-        let results;
-
-        if (isDefaultView) {
-          results = await fetchCocktailsByCategory(index, limit);
-          const mappedResults = results.drinks.map((drink) => ({
-            ...drink,
-            category: "Cocktail",
-            popular: false,
-            instructions: "",
-            ingredients: [],
-            measures: [],
-            tags: "",
-            video: null,
-            iba: null,
-            alcoholic: "",
-            glass: "",
-          }));
-          setCocktails(mappedResults);
-          setTotalCount(results.totalCount);
-          setHasMore(results.pagination?.hasMore || false);
-        } else if (query) {
-          results = await fetchCocktails(query, index, limit);
-          setCocktails(results.drinks);
-          setTotalCount(results.totalCount);
-          setHasMore(results.pagination?.hasMore || false);
-        }
+        const results = await fetchFilteredCocktails(
+          activeFilter,
+          index,
+          limit
+        );
+        setCocktails(results.drinks);
+        setTotalCount(results.totalCount);
+        setHasMore(results.pagination?.hasMore || false);
       } catch (error) {
         console.error("Failed to fetch cocktails", error);
       } finally {
         setLoading(false);
-        setIsSearching(false);
       }
     };
 
-    if (isDefaultView || query) {
-      getCocktails();
-    }
-  }, [query, index, limit, isDefaultView]);
+    getCocktails();
+  }, [activeFilter, index, limit]);
 
   // Calculate pagination state
   const currentPage = Math.floor(index / limit) + 1;
