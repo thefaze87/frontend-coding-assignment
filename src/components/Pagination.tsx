@@ -57,6 +57,8 @@ const Pagination = ({
   hasMore,
   onNext,
   onPrevious,
+  currentPage,
+  totalPages,
 }: PaginationProps) => {
   /**
    * Common button styling classes
@@ -66,26 +68,32 @@ const Pagination = ({
     "p-2 border-1 border-pagination-border bg-pagination-button-bg text-white rounded-lg hover:bg-pagination-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 ease-pagination";
 
   return (
-    <div className="mt-8 flex items-center space-x-4">
-      {/* Previous Page Button */}
-      <button
-        onClick={onPrevious}
-        disabled={index === 0}
-        className={buttonClasses}
-        aria-label="Go to previous page"
-      >
-        <img src={prevIcon} alt="Previous" className="w-6 h-6" />
-      </button>
+    <div className="flex justify-between items-center">
+      <div className="mt-8 flex items-center space-x-4">
+        {/* Previous Page Button */}
+        <button
+          onClick={onPrevious}
+          disabled={index === 0}
+          className={buttonClasses}
+          aria-label="Go to previous page"
+        >
+          <img src={prevIcon} alt="Previous" className="w-6 h-6" />
+        </button>
 
-      {/* Next Page Button */}
-      <button
-        onClick={onNext}
-        disabled={!hasMore}
-        className={buttonClasses}
-        aria-label="Go to next page"
-      >
-        <img src={nextIcon} alt="Next" className="w-6 h-6" />
-      </button>
+        {/* Next Page Button */}
+        <button
+          onClick={onNext}
+          disabled={!hasMore}
+          className={buttonClasses}
+          aria-label="Go to next page"
+        >
+          <img src={nextIcon} alt="Next" className="w-6 h-6" />
+        </button>
+      </div>
+      {/* Page Count Display */}
+      <div className="text-white">
+        Page {currentPage} of {totalPages}
+      </div>
     </div>
   );
 };
