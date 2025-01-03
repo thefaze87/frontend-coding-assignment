@@ -282,6 +282,7 @@ Started implementing but paused due to time constraints:
 - User authentication
 - Recipe collections
 - Social sharing
+- Add Escape hatch to the logo to go back to the home page
 
 ### 3. Performance
 
