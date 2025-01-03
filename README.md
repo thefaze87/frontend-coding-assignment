@@ -105,6 +105,8 @@ This is just an exercise. While the methods and approaches you take to problems 
 
 A React-based cocktail search application that allows users to discover and explore cocktail recipes. Built with TypeScript, React, and modern web development practices.
 
+### Note: Please ignore that this is ahead of master. Master got a bit squigly and I branched off from a previous commit and worked from there and master technically doesn't exist now but it's being tracked and I just have some git/github cleanup to do :)
+
 ## Features
 
 - 🔍 Real-time cocktail search
